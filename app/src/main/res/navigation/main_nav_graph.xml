@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/dashboardFragment"
+    android:id="@+id/main_nav_graph">
+
+    <!-- Добавляем аргументы для глобального сохранения состояния в NavController -->
+    <argument
+        android:name="android:defaultNavHost"
+        app:argType="boolean"
+        android:defaultValue="true" />
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="uz.dckroff.pcap.features.dashboard.DashboardFragment"
+        android:label="@string/dashboard"
+        tools:layout="@layout/fragment_dashboard">
+        
+        <action
+            android:id="@+id/action_dashboardFragment_to_contentListFragment"
+            app:destination="@id/contentListFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"
+            app:launchSingleTop="true" />
+
+        <action
+            android:id="@+id/action_dashboardFragment_to_readingFragment"
+            app:destination="@id/readingFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
+    </fragment>
+
+        <fragment
+        android:id="@+id/contentListFragment"
+        android:name="uz.dckroff.pcap.ui.content.ContentListFragment"
+        android:label="@string/content"
+        tools:layout="@layout/fragment_content_list">
+        
+        <action
+            android:id="@+id/action_contentListFragment_to_readingFragment"
+            app:destination="@id/readingFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookmarksFragment"
+        android:name="uz.dckroff.pcap.features.bookmarks.BookmarksFragment"
+        android:label="@string/bookmarks"
+        tools:layout="@layout/fragment_bookmarks">
+        
+        <action
+            android:id="@+id/action_bookmarksFragment_to_readingFragment"
+            app:destination="@id/readingFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/glossaryFragment"
+        android:name="uz.dckroff.pcap.features.glossary.GlossaryFragment"
+        android:label="@string/glossary"
+        tools:layout="@layout/fragment_glossary">
+        
+        <action
+            android:id="@+id/action_glossaryFragment_to_glossaryDetailFragment"
+            app:destination="@id/glossaryDetailFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/glossaryDetailFragment"
+        android:name="uz.dckroff.pcap.features.glossary.GlossaryDetailFragment"
+        android:label="@string/glossary_detail"
+        tools:layout="@layout/fragment_glossary_detail">
+        
+        <argument
+            android:name="termId"
+            app:argType="string" />
+            
+        <action
+            android:id="@+id/action_glossaryDetail_self"
+            app:destination="@id/glossaryDetailFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
+            
+        <action
+            android:id="@+id/action_glossaryDetailFragment_to_readingFragment"
+            app:destination="@id/readingFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/quizListFragment"
+        android:name="uz.dckroff.pcap.features.quiz.QuizListFragment"
+        android:label="@string/tests"
+        tools:layout="@layout/fragment_quiz_list">
+
+        <!-- Действие для перехода к экрану прохождения теста -->
+        <action
+            android:id="@+id/action_quizListFragment_to_quizSessionFragment"
+            app:destination="@id/quizSessionFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
+
+        <!-- Действие для перехода к экрану результатов теста -->
+        <action
+            android:id="@+id/action_quizListFragment_to_quizResultsFragment"
+            app:destination="@id/quizResultsFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/readingFragment"
+        android:name="uz.dckroff.pcap.features.reading.ReadingFragment"
+        android:label="@string/reading"
+        tools:layout="@layout/fragment_reading">
+        <argument
+            android:name="subchapterId"
+            app:argType="string" />
+        <argument
+            android:name="subchapterTitle"
+            app:argType="string" />
+        <action
+            android:id="@+id/actionReadingFragmentSelf"
+            app:destination="@id/readingFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
+    </fragment>
+
+    <!-- Заглушки для будущих фрагментов -->
+    <fragment
+        android:id="@+id/quizSessionFragment"
+        android:name="uz.dckroff.pcap.features.quiz.QuizSessionFragment"
+        android:label="@string/quiz"
+        tools:layout="@layout/fragment_quiz_session">
+        <argument
+            android:name="quizId"
+            app:argType="string" />
+        <!-- Добавляем действие для перехода к экрану результатов теста -->
+        <action
+            android:id="@+id/action_quizSessionFragment_to_quizResultsFragment"
+            app:destination="@id/quizResultsFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"
+            app:popUpTo="@id/quizListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/quizResultsFragment"
+        android:name="uz.dckroff.pcap.features.quiz.QuizResultsFragment"
+        android:label="@string/results"
+        tools:layout="@layout/fragment_quiz_results">
+        <argument
+            android:name="quizId"
+            app:argType="string" />
+        <!-- Добавляем действие для повторного прохождения теста -->
+        <action
+            android:id="@+id/action_quizResultsFragment_to_quizSessionFragment"
+            app:destination="@id/quizSessionFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
+    </fragment>
+</navigation>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="chip_background_easy">#DCF8C6</color>
+    <color name="chip_background_medium">#FFE0B2</color>
+    <color name="chip_background_hard">#FFCDD2</color>
+    <color name="text_color_easy">#4CAF50</color>
+    <color name="text_color_medium">#FF9800</color>
+    <color name="text_color_hard">#F44336</color>
+    <color name="code_background">#F5F5F5</color>
+    <color name="code_text">#263238</color>
+    <color name="definition_background">#E8F5E9</color>
+    <color name="definition_term_color">#1B5E20</color>
+    <color name="definition_text_color">#212121</color>
+    <color name="quiz_background">#E3F2FD</color>
+    <color name="quiz_question_color">#0D47A1</color>
+    <color name="correct_answer">#388E3C</color>
+    <color name="wrong_answer">#D32F2F</color>
+    <color name="note_background">#FFF8E1</color>
+    <color name="important_background">#FFEBEE</color>
+    <color name="warning_background">#FFF3E0</color>
+    <color name="divider_color">#DDDDDD</color>
+
+    <!-- Основные цвета темы -->
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!-- Дополнительные цвета -->
+    <color name="orange_500">#FF9800</color>
+
+    <color name="formula_background">#F0F4F8</color>
+    <color name="formula_text">#263238</color>
+
+    <color name="material_on_surface_emphasis_medium">#99000000</color>
+    <color name="material_on_surface_emphasis_high_type">#DD000000</color>
+</resources>

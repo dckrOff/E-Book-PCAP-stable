@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "572969779437",
+    "project_id": "e-book-pcap-test",
+    "storage_bucket": "e-book-pcap-test.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:572969779437:android:d9ffbb0578e4eb40bd0ce4",
+        "android_client_info": {
+          "package_name": "uz.dckroff.pcap"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD47UuVVeRFA4ptdsCibr28Mrk6Mbahb4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

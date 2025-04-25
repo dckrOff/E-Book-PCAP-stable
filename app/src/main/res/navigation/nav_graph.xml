@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/quizListFragment">
+
+    <fragment
+        android:id="@+id/quizListFragment"
+        android:label="fragment_quiz_list"
+        tools:layout="@layout/fragment_quiz_list">
+        <action
+            android:id="@+id/action_quizListFragment_to_quizSessionFragment"
+            app:destination="@id/quizSessionFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/quizSessionFragment"
+        android:label="fragment_quiz_session"
+        tools:layout="@layout/fragment_quiz_session">
+        <argument
+            android:name="quizId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_quizSessionFragment_to_quizResultsFragment"
+            app:destination="@id/quizResultsFragment"
+            app:popUpTo="@id/quizListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/quizResultsFragment"
+        android:label="fragment_quiz_results"
+        tools:layout="@layout/fragment_quiz_results">
+        <argument
+            android:name="quizId"
+            app:argType="long" />
+        <argument
+            android:name="score"
+            app:argType="integer" />
+        <argument
+            android:name="timestamp"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_quizResultsFragment_to_quizSessionFragment"
+            app:destination="@id/quizSessionFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+
+    <!-- Глоссарий -->
+    <fragment
+        android:id="@+id/glossaryFragment"
+        android:name="uz.dckroff.pcap.features.glossary.GlossaryFragment"
+        android:label="@string/glossary"
+        tools:layout="@layout/fragment_glossary">
+        <action
+            android:id="@+id/action_glossary_fragment_to_glossary_detail_fragment"
+            app:destination="@id/glossaryDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/glossaryDetailFragment"
+        android:name="uz.dckroff.pcap.features.glossary.GlossaryDetailFragment"
+        android:label="@string/glossary_term_details"
+        tools:layout="@layout/fragment_glossary_detail">
+        <argument
+            android:name="termId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_glossary_detail_self"
+            app:destination="@id/glossaryDetailFragment" />
+    </fragment>
+</navigation> 

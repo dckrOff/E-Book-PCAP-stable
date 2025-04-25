@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="#272822"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvCodeTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#1E1F1C"
+                android:padding="8dp"
+                android:textColor="#E6E6E6"
+                android:textSize="14sp"
+                tools:text="TCP Header Structure" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tvCodeContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:padding="12dp"
+                    android:textColor="#F8F8F2"
+                    android:textSize="14sp"
+                    tools:text="struct tcp_header {\n    uint16_t source_port;\n    uint16_t dest_port;\n    uint32_t sequence;\n    uint32_t acknowledgment;\n    uint8_t data_offset:4;\n    uint8_t reserved:3;\n    uint8_t flags;\n    uint16_t window;\n    uint16_t checksum;\n    uint16_t urgent_pointer;\n};" />
+            </HorizontalScrollView>
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout> 

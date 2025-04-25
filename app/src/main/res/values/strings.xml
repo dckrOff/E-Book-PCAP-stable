@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Учебник ПАКП</string>
+    <string name="action_settings">Настройки</string>
+
+    <!-- Общие строки -->
+    <string name="app_logo">Логотип приложения</string>
+    <string name="loading">Загрузка…</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Отмена</string>
+    <string name="save">Сохранить</string>
+    <string name="delete">Удалить</string>
+    <string name="search">Поиск</string>
+    <string name="search_hint">Введите текст для поиска…</string>
+    <string name="error_loading_data">Ошибка загрузки данных</string>
+    <string name="retry">Повторить</string>
+    <string name="expand">Развернуть</string>
+    <string name="error">Ошибка</string>
+    <string name="empty_content_list">Содержание не найдено</string>
+    <string name="content">Содержание</string>
+    <string name="reading">Чтение</string>
+
+    <!-- Навигация -->
+    <string name="nav_home">Главная</string>
+    <string name="nav_contents">Содержание</string>
+    <string name="nav_bookmarks">Закладки</string>
+    <string name="nav_glossary">Глоссарий</string>
+    <string name="nav_tests">Тесты</string>
+    <string name="nav_settings">Настройки</string>
+    <string name="navigation_drawer_open">Открыть меню</string>
+    <string name="navigation_drawer_close">Закрыть меню</string>
+    <string name="home">Главная</string>
+    <string name="other">Другое</string>
+
+    <!-- Главная страница -->
+    <string name="recent_chapters">Недавно просмотренные</string>
+    <string name="continue_learning">Продолжить изучение</string>
+    <string name="progress">Ваш прогресс</string>
+    <string name="all_sections">Все разделы</string>
+    <string name="recommendations">Рекомендованные разделы</string>
+
+    <!-- Содержание -->
+    <string name="chapter">Глава</string>
+    <string name="section">Раздел</string>
+    <string name="table_of_contents">Содержание</string>
+
+    <!-- Чтение -->
+    <string name="next_section">Следующий раздел</string>
+    <string name="previous_section">Предыдущий раздел</string>
+    <string name="font_size">Размер шрифта</string>
+    <string name="add_bookmark">Добавить закладку</string>
+    <string name="add_note">Добавить заметку</string>
+
+    <!-- Тесты -->
+    <string name="start_test">Начать тест</string>
+    <string name="finish_test">Завершить тест</string>
+    <string name="question">Вопрос</string>
+    <string name="submit_answer">Отправить ответ</string>
+    <string name="correct_answers">Правильные ответы:</string>
+    <string name="test_result">Результат теста</string>
+    <string name="test_passed">Тест пройден!</string>
+    <string name="test_failed">Тест не пройден</string>
+    <string name="tests">Тесты</string>
+    <string name="filter_by">Фильтр</string>
+    <string name="all_tests">Все тесты</string>
+    <string name="completed">Пройденные</string>
+    <string name="pending">Ожидающие</string>
+    <string name="difficulty">Сложность</string>
+    <string name="all_difficulty">Любая</string>
+    <string name="easy">Легкий</string>
+    <string name="medium">Средний</string>
+    <string name="hard">Сложный</string>
+    <string name="no_quizzes">Тесты не найдены</string>
+    <string name="error_loading_quizzes">Ошибка при загрузке тестов</string>
+    <string name="questions_count">%d вопросов</string>
+    <string name="time_limit">%d минут</string>
+    <string name="no_time_limit">Без ограничения</string>
+    <string name="score">%d%%</string>
+    <string name="results">Результаты</string>
+    <string name="not_completed">Не пройден</string>
+
+    <!-- Quiz Session Screen -->
+    <string name="quiz">Тест</string>
+    <string name="question_number">Вопрос %1$d/%2$d</string>
+    <string name="true_answer">Верно</string>
+    <string name="false_answer">Неверно</string>
+    <string name="your_answer">Ваш ответ</string>
+    <string name="previous_question">Назад</string>
+    <string name="next_question">Далее</string>
+    <string name="confirm_finish_quiz">Вы уверены, что хотите завершить тест? Все несохраненные ответы будут утеряны.</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="answered_questions_count">%1$d/%2$d вопросов отвечено</string>
+    <string name="remaining_time">Осталось: %s</string>
+    <string name="error_loading_quiz">Ошибка при загрузке теста</string>
+
+    <!-- Закладки и заметки -->
+    <string name="dashboard">Главная страница</string>
+    <string name="bookmarks">Закладки</string>
+    <string name="notes">Заметки</string>
+    <string name="edit_note">Редактировать заметку</string>
+    <string name="note_hint">Введите текст заметки…</string>
+    <string name="delete_bookmark">Удалить закладку</string>
+    <string name="no_bookmarks">У вас пока нет закладок</string>
+    <string name="no_notes">У вас пока нет заметок</string>
+    <string name="delete_note">Удалить заметку</string>
+    <string name="error_loading_notes">Ошибка при загрузке заметок</string>
+
+    <!-- Глоссарий -->
+    <string name="glossary">Глоссарий</string>
+    <string name="glossary_term">Термин</string>
+    <string name="glossary_definition">Определение</string>
+    <string name="glossary_term_details">Подробности термина</string>
+    <string name="section_number">Раздел %s</string>
+    <string name="related_terms">Связанные термины</string>
+    <string name="related_sections">Связанные разделы</string>
+    <string name="no_terms_found">Термины не найдены</string>
+    <string name="search_terms">Поиск терминов</string>
+    <string name="search_glossary">Поиск в глоссарии</string>
+    <string name="all_categories">Все категории</string>
+    <string name="no_terms">Термины не найдены</string>
+    <string name="error_loading_terms">Ошибка при загрузке терминов</string>
+    <string name="empty_item">Пусто</string>
+    <string name="glossary_search_hint">Поиск терминов...</string>
+    <string name="glossary_empty">Термины не найдены</string>
+    <string name="definition">Определение</string>
+    <string name="glossary_category">Категория: %s</string>
+    <string name="glossary_detail">Подробности термина</string>
+    <string name="no_related_terms">Нет связанных терминов</string>
+    <string name="no_related_sections">Нет связанных разделов</string>
+    <string name="no_data">Нет данных</string>
+    <string name="no_data_description">По вашему запросу ничего не найдено. Попробуйте изменить параметры поиска.</string>
+    <string name="error_occurred">Произошла ошибка</string>
+
+    <!-- Настройки -->
+    <string name="theme">Тема</string>
+    <string name="light_theme">Светлая</string>
+    <string name="dark_theme">Тёмная</string>
+    <string name="system_theme">Системная</string>
+    <string name="text_size">Размер текста</string>
+    <string name="small">Малый</string>
+    <string name="medium_default">Средний (по умолчанию)</string>
+    <string name="large">Большой</string>
+    <string name="about_app">О приложении</string>
+    <string name="version">Версия</string>
+
+    <!-- Для обратной совместимости, оставляем используемые строки -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
+        volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
+        dui nec risus. Maecenas non sodales nisi, vel dictum dolor. Class aptent taciti sociosqu ad
+        litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse blandit eleifend
+        diam, vel rutrum tellus vulputate quis. Aliquam eget libero aliquet, imperdiet nisl a,
+        ornare ex. Sed rhoncus est ut libero porta lobortis. Fusce in dictum tellus.\n\n
+        Suspendisse interdum ornare ante. Aliquam nec cursus lorem. Morbi id magna felis. Vivamus
+        egestas, est a condimentum egestas, turpis nisl iaculis ipsum, in dictum tellus dolor sed
+        neque. Morbi tellus erat, dapibus ut sem a, iaculis tincidunt dui. Interdum et malesuada
+        fames ac ante ipsum primis in faucibus. Curabitur et eros porttitor, ultricies urna vitae,
+        molestie nibh. Phasellus at commodo eros, non aliquet metus. Sed maximus nisl nec dolor
+        bibendum, vel congue leo egestas.\n\n
+        Sed interdum tortor nibh, in sagittis risus mollis quis. Curabitur mi odio, condimentum sit
+        amet auctor at, mollis non turpis. Nullam pretium libero vestibulum, finibus orci vel,
+        molestie quam. Fusce blandit tincidunt nulla, quis sollicitudin libero facilisis et. Integer
+        interdum nunc ligula, et fermentum metus hendrerit id. Vestibulum lectus felis, dictum at
+        lacinia sit amet, tristique id quam. Cras eu consequat dui. Suspendisse sodales nunc ligula,
+        in lobortis sem porta sed. Integer id ultrices magna, in luctus elit. Sed a pellentesque
+        est.\n\n
+        Aenean nunc velit, lacinia sed dolor sed, ultrices viverra nulla. Etiam a venenatis nibh.
+        Morbi laoreet, tortor sed facilisis varius, nibh orci rhoncus nulla, id elementum leo dui
+        non lorem. Nam mollis ipsum quis auctor varius. Quisque elementum eu libero sed commodo. In
+        eros nisl, imperdiet vel imperdiet et, scelerisque a mauris. Pellentesque varius ex nunc,
+        quis imperdiet eros placerat ac. Duis finibus orci et est auctor tincidunt. Sed non viverra
+        ipsum. Nunc quis augue egestas, cursus lorem at, molestie sem. Morbi a consectetur ipsum, a
+        placerat diam. Etiam vulputate dignissim convallis. Integer faucibus mauris sit amet finibus
+        convallis.\n\n
+        Phasellus in aliquet mi. Pellentesque habitant morbi tristique senectus et netus et
+        malesuada fames ac turpis egestas. In volutpat arcu ut felis sagittis, in finibus massa
+        gravida. Pellentesque id tellus orci. Integer dictum, lorem sed efficitur ullamcorper,
+        libero justo consectetur ipsum, in mollis nisl ex sed nisl. Donec maximus ullamcorper
+        sodales. Praesent bibendum rhoncus tellus nec feugiat. In a ornare nulla. Donec rhoncus
+        libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
+        vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
+    </string>
+
+    <string name="note_title">Заголовок</string>
+    <string name="note_content">Содержание</string>
+    <string name="error_empty_title">Введите заголовок заметки</string>
+    <string name="error_empty_content">Введите содержание заметки</string>
+    <string name="error_saving_note">Ошибка при сохранении заметки</string>
+
+    <!-- Quiz Results Screen -->
+    <string name="quiz_results_title">Результаты теста</string>
+    <string name="your_score">Ваш результат</string>
+    <string name="answers_review">Обзор ответов</string>
+    <string name="correct_answer">Правильный ответ:</string>
+    <string name="your_answer_label">Ваш ответ:</string>
+    <string name="explanation">Пояснение:</string>
+    <string name="retake_quiz">Пройти заново</string>
+    <string name="correct_answers_count">%1$d из %2$d ответов правильные</string>
+    <string name="time_spent">Затраченное время: %s</string>
+    <string name="attempt_date">Пройден: %s</string>
+    <string name="question_number_simple">Вопрос %d</string>
+    <string name="error_loading_results">Ошибка при загрузке результатов</string>
+
+    <!-- Settings Screen -->
+    <string name="settings">Настройки</string>
+    <string name="appearance">Внешний вид</string>
+    <string name="system_theme_default">Системная (по умолчанию)</string>
+    <string name="small_text">Мелкий</string>
+    <string name="large_text">Крупный</string>
+    <string name="extra_large">Очень крупный</string>
+    <string name="functionality">Функциональность</string>
+    <string name="auto_save">Автоматическое сохранение</string>
+    <string name="auto_save_description">Автоматически сохранять прогресс чтения и заметки</string>
+    <string name="notifications">Уведомления</string>
+    <string name="notifications_description">Получать уведомления о новом контенте и напоминания об обучении</string>
+    <string name="about">О приложении</string>
+    <string name="app_description">Приложение для изучения сетевых протоколов с обучающими материалами, тестами и глоссарием</string>
+    <string name="version_format">Версия %s</string>
+
+    <!-- Offline Mode -->
+    <string name="offline_mode_enabled">Оффлайн-режим активирован</string>
+    <string name="connection_restored">Подключение к интернету восстановлено</string>
+    <string name="sync_in_progress">Синхронизация данных…</string>
+    <string name="sync_completed">Синхронизация завершена</string>
+    <string name="sync_failed">Ошибка синхронизации</string>
+    <string name="sync_now">Синхронизировать</string>
+    <string name="last_synced">Последняя синхронизация: %s</string>
+    <string name="never_synced">Не синхронизировано</string>
+    <string name="offline_content_warning">Вы просматриваете сохраненную версию контента</string>
+    <string name="offline_mode">Оффлайн-режим</string>
+    <string name="status">Статус</string>
+    <string name="offline_settings">Настройки оффлайн-режима</string>
+    <string name="auto_sync">Автоматическая синхронизация</string>
+    <string name="auto_sync_description">Автоматически синхронизировать данные при восстановлении соединения</string>
+    <string name="download_all_content">Скачать весь контент</string>
+    <string name="download_all_description">Скачать все главы, разделы и тесты для оффлайн-доступа</string>
+    <string name="cache_management">Управление кэшем</string>
+    <string name="clear_cache">Очистить кэш</string>
+    <string name="cache_size">Размер кэша: %s</string>
+    <string name="network_status_online">Подключено к сети</string>
+    <string name="network_status_offline">Оффлайн-режим</string>
+    <string name="confirm_clear_cache">Вы действительно хотите очистить кэш? Все скачанные данные будут удалены.</string>
+
+    <!-- Reading Fragment -->
+    <string name="reading_error_loading">Ошибка загрузки содержимого</string>
+    <string name="reading_add_bookmark">Добавить закладку</string>
+    <string name="reading_add_note">Добавить заметку</string>
+    <string name="reading_share">Поделиться</string>
+    <string name="reading_font_settings">Настройки шрифта</string>
+
+    <string name="no_content_available">Содержание отсутствует</string>
+    <string name="navigation_error">Ошибка навигации: </string>
+
+    <!-- Content types -->
+    <string name="image_content_description">Изображение</string>
+    <string name="code_block_title">Пример кода</string>
+    <string name="quiz_title">Мини-тест</string>
+    <string name="quiz_submit">Проверить</string>
+    <string name="quiz_try_again">Попробовать снова</string>
+    <string name="quiz_correct">Правильно!</string>
+    <string name="quiz_incorrect">Неправильно. Попробуйте еще раз.</string>
+    <string name="important_title">Важно</string>
+    <string name="warning_title">Предупреждение</string>
+    <string name="video_play">Воспроизвести видео</string>
+    <string name="video_thumbnail">Превью видео</string>
+    <string name="video_load_error">Ошибка загрузки видео</string>
+    <string name="term_definition">Определение</string>
+    <string name="interactive_diagram_hint">Нажмите на точки для получения информации</string>
+</resources>
