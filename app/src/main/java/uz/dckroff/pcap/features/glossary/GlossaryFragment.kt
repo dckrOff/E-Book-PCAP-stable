@@ -165,7 +165,6 @@ class GlossaryFragment : Fragment() {
             }
         }
     }
-
     private fun observeViewModel() {
         // Используем lifecycleScope для более эффективного управления подписками
         viewLifecycleOwner.lifecycleScope.launch {
