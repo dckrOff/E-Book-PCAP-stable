@@ -39,7 +39,7 @@ class BookmarksFragment : Fragment() {
         Timber.d("BookmarksFragment created")
         
         setupUI()
-//        setupObservers()
+        setupObservers()
     }
     
     private fun setupUI() {
@@ -49,11 +49,11 @@ class BookmarksFragment : Fragment() {
             onDeleteClick = { bookmark -> deleteBookmark(bookmark) }
         )
         
-//        // Устанавливаем адаптер и LayoutManager
-//        binding.recyclerView.apply {
-//            adapter = bookmarksAdapter
-//            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
-//        }
+        // Устанавливаем адаптер и LayoutManager
+        binding.recyclerView.apply {
+            adapter = bookmarksAdapter
+            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
+        }
         
         // Настройка обработчиков ошибок
         binding.errorView.buttonRetry.setOnClickListener {

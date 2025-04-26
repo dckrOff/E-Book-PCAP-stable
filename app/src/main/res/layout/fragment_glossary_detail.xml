@@ -13,6 +13,7 @@
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
+            app:titleTextAppearance="@style/ToolbarTitleTextStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_back"
@@ -34,6 +35,7 @@
             <TextView
                 android:id="@+id/textTitle"
                 android:layout_width="match_parent"
+                android:textColor="@color/textColorPrimary"
                 android:layout_height="wrap_content"
                 android:textAppearance="?textAppearanceHeadlineMedium"
                 android:textStyle="bold"
@@ -53,6 +55,7 @@
                 android:id="@+id/definitionLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/textColorPrimary"
                 android:layout_marginTop="16dp"
                 android:text="@string/definition"
                 android:textAppearance="?textAppearanceBodyLarge"
@@ -64,6 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:textColor="@color/textColorPrimary"
                 android:textAppearance="?textAppearanceBodyLarge"
                 app:layout_constraintTop_toBottomOf="@id/definitionLabel"
                 tools:text="Набор сетевых протоколов, обеспечивающих передачу данных между устройствами в сети. Состоит из четырех уровней: прикладной, транспортный, сетевой и канальный." />
@@ -81,6 +85,7 @@
                     android:id="@+id/relatedTermsLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/textColorPrimary"
                     android:text="@string/related_terms"
                     android:textAppearance="?textAppearanceBodyLarge"
                     android:textStyle="bold"
@@ -108,6 +113,7 @@
                     android:id="@+id/relatedSectionsLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/textColorPrimary"
                     android:text="@string/related_sections"
                     android:textAppearance="?textAppearanceBodyLarge"
                     android:textStyle="bold"
@@ -140,5 +146,4 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone" />
-        
 </androidx.coordinatorlayout.widget.CoordinatorLayout> 

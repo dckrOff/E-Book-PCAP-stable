@@ -26,6 +26,11 @@ class DashboardFragment : Fragment() {
     private lateinit var recentAdapter: ChapterAdapter
     private lateinit var allChaptersAdapter: ChapterAdapter
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(false)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -39,11 +44,11 @@ class DashboardFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupAdapters()
-//        setupUI()
-//        observeViewModel()
-//
-//        // Загрузка временных данных для демонстрации
-//        loadDummyData()
+        setupUI()
+        observeViewModel()
+
+        // Загрузка временных данных для демонстрации
+        loadDummyData()
     }
 
     private fun setupAdapters() {
@@ -220,14 +225,6 @@ class DashboardFragment : Fragment() {
                 binding.rvAllChapters.visibility = View.VISIBLE
             }
         }
-        
-        // Наблюдение за событием навигации к экрану чтения
-        viewModel.navigateToReading.observe(viewLifecycleOwner) { chapter ->
-            chapter?.let {
-                navigateToReading(chapter)
-                viewModel.onReadingNavigated()
-            }
-        }
 
         // Наблюдение за статусом загрузки
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
@@ -243,30 +240,6 @@ class DashboardFragment : Fragment() {
                 Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
                 viewModel.clearError()
             }
-        }
-    }
-    
-    /**
-     * Навигация к экрану содержания главы
-     */
-    private fun navigateToReading(chapter: Chapter) {
-        try {
-            val action = DashboardFragmentDirections.actionDashboardFragmentToContentListFragment()
-            findNavController().navigate(action)
-            
-            // Передаем идентификатор главы в ViewModel для фильтрации содержимого
-            val contentListViewModel = androidx.lifecycle.ViewModelProvider(requireActivity())
-                .get(uz.dckroff.pcap.ui.content.ContentListViewModel::class.java)
-            contentListViewModel.filterContentByChapter(chapter.id)
-            
-            Timber.d("Navigating to content list screen for chapter: ${chapter.title}")
-        } catch (e: Exception) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.navigation_error) + e.message,
-                Toast.LENGTH_SHORT
-            ).show()
-            Timber.e(e, "Error navigating to content list fragment")
         }
     }
 

@@ -4,10 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import uz.dckroff.pcap.data.repository.BookmarkRepository
-import uz.dckroff.pcap.data.repository.BookmarkRepositoryImpl
-import uz.dckroff.pcap.data.repository.GlossaryRepository
-import uz.dckroff.pcap.data.repository.GlossaryRepositoryImpl
+import uz.dckroff.pcap.data.repository.*
 import javax.inject.Singleton
 
 @Module
@@ -16,8 +13,10 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideGlossaryRepository(): GlossaryRepository {
-        return GlossaryRepository.getInstance()
+    fun provideGlossaryRepository(
+        glossaryRepositoryImpl: GlossaryRepositoryImpl
+    ): GlossaryRepository {
+        return glossaryRepositoryImpl
     }
     
     @Provides
@@ -26,5 +25,13 @@ object RepositoryModule {
         bookmarkRepositoryImpl: BookmarkRepositoryImpl
     ): BookmarkRepository {
         return bookmarkRepositoryImpl
+    }
+    
+    @Provides
+    @Singleton
+    fun provideBookmarksRepository(
+        bookmarksRepositoryImpl: BookmarksRepositoryImpl
+    ): BookmarksRepository {
+        return bookmarksRepositoryImpl
     }
 } 

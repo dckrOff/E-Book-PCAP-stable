@@ -7,21 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.doOnPreDraw
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import uz.dckroff.pcap.R
 import uz.dckroff.pcap.data.model.GlossaryCategories
 import uz.dckroff.pcap.databinding.FragmentGlossaryBinding
+import uz.dckroff.pcap.utils.showErrorSnackbar
 
 /**
  * Фрагмент для отображения списка терминов глоссария с возможностью поиска и фильтрации по категориям
@@ -29,37 +26,16 @@ import uz.dckroff.pcap.databinding.FragmentGlossaryBinding
 @AndroidEntryPoint
 class GlossaryFragment : Fragment() {
 
-    companion object {
-        private const val TAG = "GlossaryFragment"
-        
-        // Для хранения статического экземпляра адаптера
-        private var sharedAdapter: GlossaryAdapter? = null
-    }
-
     private var _binding: FragmentGlossaryBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: GlossaryViewModel by viewModels()
-    
-    // Используем общий адаптер для всех экземпляров фрагмента
-    private val adapter: GlossaryAdapter
-        get() {
-            if (sharedAdapter == null) {
-                Log.d(TAG, "Создание нового глобального адаптера")
-                sharedAdapter = createAdapter()
-            }
-            return sharedAdapter!!
-        }
-    
-    // Флаг для отслеживания первой инициализации
-    private var isFirstInit = true
+    private lateinit var adapter: GlossaryAdapter
+    private var isRecyclerViewInitialized = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.d("$TAG: onCreate")
-        
-        // Установка флага для сохранения состояния фрагмента
-        setRetainInstance(true)
+        setHasOptionsMenu(false) // Отключаем меню опций для ViewPager
     }
 
     override fun onCreateView(
@@ -67,202 +43,134 @@ class GlossaryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Timber.d("$TAG: onCreateView")
         _binding = FragmentGlossaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
-        Timber.d("$TAG: onViewCreated, isFirstInit = $isFirstInit")
-        
-        // Отложенная инициализация тяжелых компонентов
-        view.doOnPreDraw {
+
+        if (!isRecyclerViewInitialized) {
             setupRecyclerView()
-            
-            // Настраиваем компоненты только при первом создании
-            if (isFirstInit) {
-                setupSearchView()
-                setupCategoriesChips()
-                isFirstInit = false
-            }
-            
-            // Наблюдаем за данными только если фрагмент активен
-            if (viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-                observeViewModel()
-            }
+            isRecyclerViewInitialized = true
         }
-    }
-    
-    private fun createAdapter(): GlossaryAdapter {
-        return GlossaryAdapter { term ->
-            val bundle = Bundle().apply {
-                putString("termId", term.id)
-            }
-            try {
-                // Пробуем найти действие в main_nav_graph.xml
-                findNavController().navigate(R.id.action_glossaryFragment_to_glossaryDetailFragment, bundle)
-            } catch (e: Exception) {
-                try {
-                    // Если не получилось, пробуем действие из nav_graph.xml
-                    findNavController().navigate(R.id.action_glossary_fragment_to_glossary_detail_fragment, bundle)
-                } catch (e: Exception) {
-                    // Если и это не работает, логируем ошибку
-                    Timber.e(e, "Ошибка навигации: ${e.message}")
-                    // Показываем сообщение пользователю
-                    Toast.makeText(requireContext(), "Ошибка навигации", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
+
+        setupSearchView()
+        setupCategoriesChips()
+        observeViewModel()
     }
 
     private fun setupRecyclerView() {
-        // Оптимизированная настройка RecyclerView
+        // Создаем адаптер с пустой функцией обработки нажатий
+        adapter = GlossaryAdapter { /* будет установлено позже через setOnItemClickListener */ }
+
         binding.recyclerView.apply {
-            if (layoutManager == null) {
-                layoutManager = LinearLayoutManager(requireContext())
-            }
-            
-            if (adapter != this@GlossaryFragment.adapter) {
-                adapter = this@GlossaryFragment.adapter
-                
-                // Оптимизируем работу RecyclerView
-                setHasFixedSize(true)
-                setItemViewCacheSize(20)
-                recycledViewPool.setMaxRecycledViews(0, 20)
-            }
-            
-            // Отключаем анимации для повышения производительности
-            (itemAnimator as androidx.recyclerview.widget.SimpleItemAnimator).supportsChangeAnimations = false
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = this@GlossaryFragment.adapter
+        }
+        
+        // Устанавливаем обработчик нажатий через setOnItemClickListener
+        adapter.setOnItemClickListener { term ->
+            // Создаем и показываем GlossaryDetailFragment как диалог
+            val detailFragment = GlossaryDetailFragment.newInstance(term.id)
+            detailFragment.show(parentFragmentManager, "glossary_detail")
         }
     }
 
     private fun setupSearchView() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                query?.let { viewModel.searchTerms(it) }
+                query?.let { viewModel.setSearchQuery(it) }
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                newText?.let { viewModel.searchTerms(it) }
+                newText?.let { viewModel.setSearchQuery(it) }
                 return true
             }
         })
+
+        binding.searchView.setOnCloseListener {
+            viewModel.clearSearchQuery()
+            false
+        }
     }
 
     private fun setupCategoriesChips() {
-        // Настройка чипов для категорий
         binding.chipGroupCategories.setOnCheckedStateChangeListener { group, checkedIds ->
-            if (checkedIds.isNotEmpty()) {
-                val chipId = checkedIds[0]
-                val chip = group.findViewById<Chip>(chipId)
+            val checkedId = checkedIds.firstOrNull()
+            if (checkedId != null) {
+                val chip = group.findViewById<Chip>(checkedId)
                 val category = chip.text.toString()
                 viewModel.setCategory(category)
             } else {
+                // Если ни один чип не выбран, показываем все категории
                 viewModel.setCategory(GlossaryCategories.ALL)
             }
         }
     }
+
     private fun observeViewModel() {
-        // Используем lifecycleScope для более эффективного управления подписками
-        viewLifecycleOwner.lifecycleScope.launch {
-            // Наблюдаем за категориями
-            viewModel.categories.observe(viewLifecycleOwner) { categories ->
-                Log.d(TAG, "Получено ${categories.size} категорий")
-                if (binding.chipGroupCategories.childCount == 0) {
-                    updateCategoriesChips(categories)
-                }
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            // Наблюдаем за списком терминов
-            viewModel.terms.observe(viewLifecycleOwner) { terms ->
-                Log.d(TAG, "Получено ${terms.size} терминов")
-                adapter.submitList(terms)
-                updateVisibility(terms.isEmpty(), viewModel.loading.value ?: false)
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            // Наблюдаем за состоянием загрузки
-            viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
-                binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-                updateVisibility(viewModel.terms.value?.isEmpty() ?: true, isLoading)
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            // Наблюдаем за ошибками
-            viewModel.error.observe(viewLifecycleOwner) { error ->
-                if (error != null) {
-                    Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
-
-    private fun updateVisibility(isEmpty: Boolean, isLoading: Boolean) {
-        // Обновляем видимость компонентов в зависимости от состояния
-        binding.recyclerView.visibility = if (!isEmpty && !isLoading) View.VISIBLE else View.GONE
-//        binding.emptyView?.visibility = if (isEmpty && !isLoading) View.VISIBLE else View.GONE
-    }
-
-    private fun updateCategoriesChips(categories: List<String>) {
-        try {
-            // Очищаем и обновляем чипы только если это необходимо
+        // Наблюдаем за списком категорий
+        viewModel.categories.observe(viewLifecycleOwner) { categories ->
+            Log.e("TAG", "observeViewModel: ")
             binding.chipGroupCategories.removeAllViews()
-            
-            // Добавляем чипы для каждой категории
-            categories.forEach { category ->
-                val chip = layoutInflater.inflate(
-                    R.layout.item_category_chip, 
-                    binding.chipGroupCategories, 
-                    false
-                ) as Chip
-                
-                chip.text = category
-                chip.id = View.generateViewId()
-                
-                // Выбираем чип, если он соответствует текущей выбранной категории
-                viewModel.selectedCategory.value?.let {
-                    if (it == category) {
-                        chip.isChecked = true
-                    }
-                }
-                
-                binding.chipGroupCategories.addView(chip)
+
+            // Добавляем чип "Все" в начало
+            val allChip = Chip(requireContext()).apply {
+                text = GlossaryCategories.ALL
+                isCheckable = true
+                isChecked = viewModel.selectedCategory.value == GlossaryCategories.ALL
             }
-        } catch (e: Exception) {
-            Timber.e(e, "Ошибка при обновлении чипов категорий")
+            binding.chipGroupCategories.addView(allChip)
+
+            // Добавляем остальные категории
+            categories.forEach { category ->
+                if (category != GlossaryCategories.ALL) {
+                    val chip = Chip(requireContext()).apply {
+                        text = category
+                        isCheckable = true
+                        isChecked = viewModel.selectedCategory.value == category
+                    }
+                    binding.chipGroupCategories.addView(chip)
+                }
+            }
         }
-    }
-    
-    override fun onResume() {
-        super.onResume()
-        Timber.d("$TAG: onResume")
-    }
-    
-    override fun onPause() {
-        super.onPause()
-        Timber.d("$TAG: onPause")
+
+        // Наблюдаем за списком терминов
+        viewModel.terms.observe(viewLifecycleOwner) { terms ->
+            adapter.submitList(terms)
+            binding.emptyLayout.root.isVisible = terms.isEmpty() && !viewModel.loading.value!!
+        }
+
+        // Наблюдаем за состоянием загрузки
+        viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.isVisible = isLoading
+            if (!isLoading) {
+                binding.emptyLayout.root.isVisible = viewModel.terms.value?.isEmpty() == true
+            }
+        }
+
+        // Наблюдаем за ошибками
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+            if (errorMessage != null) {
+                binding.errorLayout.root.isVisible = true
+                binding.errorLayout.textErrorMessage.text = errorMessage
+                binding.recyclerView.isVisible = false
+                binding.emptyLayout.root.isVisible = false
+
+                binding.errorLayout.buttonRetry.setOnClickListener {
+                    viewModel.loadTerms()
+                }
+            } else {
+                binding.errorLayout.root.isVisible = false
+                binding.recyclerView.isVisible = true
+            }
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Timber.d("$TAG: onDestroyView")
         _binding = null
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Timber.d("$TAG: onDestroy")
-        
-        // Очищаем адаптер только если фрагмент удаляется навсегда
-        if (requireActivity().isFinishing) {
-            sharedAdapter = null
-        }
     }
 } 

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <!-- Стиль для полноэкранного диалогового окна -->
+    <style name="FullScreenDialogStyle" parent="Theme.MaterialComponents.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:textColorPrimary">?attr/colorOnBackground</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:windowEnterAnimation">@anim/slide_in_right</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_right</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="ToolbarTitleTextStyle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">?attr/colorOnBackground</item> <!-- цвет текста под тему -->
+        <item name="android:colorBackground">?attr/colorBackgroundFloating</item>
+        <item name="android:textSize">18sp</item> <!-- можно больше/меньше -->
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <!-- Другие стили... -->
+</resources> 

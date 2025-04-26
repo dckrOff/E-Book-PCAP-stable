@@ -5,12 +5,6 @@
     app:startDestination="@id/dashboardFragment"
     android:id="@+id/main_nav_graph">
 
-    <!-- Добавляем аргументы для глобального сохранения состояния в NavController -->
-    <argument
-        android:name="android:defaultNavHost"
-        app:argType="boolean"
-        android:defaultValue="true" />
-
     <fragment
         android:id="@+id/dashboardFragment"
         android:name="uz.dckroff.pcap.features.dashboard.DashboardFragment"
@@ -23,8 +17,7 @@
             app:enterAnim="@anim/fade_in"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/fade_out"
-            app:launchSingleTop="true" />
+            app:popExitAnim="@anim/fade_out" />
 
         <action
             android:id="@+id/action_dashboardFragment_to_readingFragment"

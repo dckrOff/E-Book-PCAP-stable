@@ -23,9 +23,6 @@ class GlossaryViewModel @Inject constructor(
     private val glossaryRepository: GlossaryRepository
 ) : ViewModel() {
     
-    // Флаг, указывающий, были ли данные уже загружены
-    private var isDataInitialized = false
-    
     // Список терминов для отображения
     private val _terms = MutableLiveData<List<GlossaryTerm>>()
     val terms: LiveData<List<GlossaryTerm>> = _terms
@@ -62,22 +59,9 @@ class GlossaryViewModel @Inject constructor(
     private var searchJob: Job? = null
     
     init {
-        // Загружаем данные только при первой инициализации
-        initializeData()
-    }
-    
-    /**
-     * Инициализация данных (загружается только один раз)
-     */
-    private fun initializeData() {
-        if (!isDataInitialized) {
-            Timber.d("GlossaryViewModel: Loading initial data")
-            loadCategories()
-            loadTerms()
-            isDataInitialized = true
-        } else {
-            Timber.d("GlossaryViewModel: Data already loaded, skipping initialization")
-        }
+        // Загружаем категории и термины при инициализации
+        loadCategories()
+        loadTerms()
     }
     
     /**
@@ -104,49 +88,65 @@ class GlossaryViewModel @Inject constructor(
         
         viewModelScope.launch {
             try {
-                // Отменяем предыдущий поиск, если он выполняется
-                searchJob?.cancel()
-                
-                val query = _searchQuery.value.orEmpty()
                 val category = _selectedCategory.value ?: GlossaryCategories.ALL
+                val query = _searchQuery.value ?: ""
                 
-                val filteredTerms = if (query.isNotEmpty()) {
-                    glossaryRepository.searchTerms(query)
-                } else if (category != GlossaryCategories.ALL) {
+                val result = if (query.isBlank()) {
+                    // Если нет поискового запроса, фильтруем только по категории
                     glossaryRepository.getTermsByCategory(category)
                 } else {
-                    glossaryRepository.getAllTerms()
+                    // Если есть поисковый запрос, выполняем поиск и фильтруем по категории
+                    val searchResults = glossaryRepository.searchTerms(query)
+                    
+                    // Если выбрана категория "Все", возвращаем все результаты поиска
+                    if (category == GlossaryCategories.ALL) {
+                        searchResults
+                    } else {
+                        // Иначе фильтруем результаты поиска по категории
+                        searchResults.filter { it.category == category }
+                    }
                 }
                 
-                _terms.value = filteredTerms
-                _empty.value = filteredTerms.isEmpty()
-                _loading.value = false
+                // Сортируем результаты по алфавиту
+                val sortedResult = result.sortedBy { it.term }
                 
-                Timber.d("Загружено ${filteredTerms.size} терминов")
+                _terms.value = sortedResult
+                _empty.value = sortedResult.isEmpty()
+                
+                Timber.d("Загружено ${sortedResult.size} терминов")
             } catch (e: Exception) {
-                _error.value = e.message
+                Timber.e(e, "Ошибка при загрузке терминов: ${e.message}")
+                _error.value = "Ошибка при загрузке терминов: ${e.message}"
+                _empty.value = true
+            } finally {
                 _loading.value = false
-                Timber.e(e, "Ошибка при загрузке терминов")
             }
         }
     }
     
     /**
-     * Поиск терминов по тексту с дебаунсом
+     * Получить термин по ID
      */
-    fun searchTerms(query: String) {
-        _searchQuery.value = query
+    fun getTermById(termId: String) {
+        _currentTerm.value = Resource.Loading()
         
-        // Отменяем предыдущий поиск, если он выполняется
-        searchJob?.cancel()
-        
-        // Создаем новый поиск с задержкой для дебаунса
-        searchJob = viewModelScope.launch {
-            delay(300) // Дебаунс 300мс для предотвращения частых запросов
-            loadTerms()
+        viewModelScope.launch {
+            try {
+                val term = glossaryRepository.getTermById(termId)
+                if (term != null) {
+                    _currentTerm.value = Resource.Success(term)
+                    Timber.d("Загружен термин: ${term.term}")
+                } else {
+                    _currentTerm.value = Resource.Error("Термин не найден")
+                    Timber.e("Термин с ID $termId не найден")
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Ошибка при загрузке термина: ${e.message}")
+                _currentTerm.value = Resource.Error("Ошибка при загрузке термина: ${e.message}")
+            }
         }
     }
-
+    
     /**
      * Получить термин по ID (синхронно из кэша, для внутреннего использования)
      */
@@ -159,9 +159,9 @@ class GlossaryViewModel @Inject constructor(
             null
         }
     }
-
+    
     /**
-     * Установить категорию для фильтрации
+     * Установить выбранную категорию
      */
     fun setCategory(category: String) {
         if (_selectedCategory.value != category) {
@@ -171,23 +171,25 @@ class GlossaryViewModel @Inject constructor(
     }
     
     /**
-     * Загрузить термин по ID
+     * Установить поисковый запрос
      */
-    fun getTermById(termId: String) {
-        viewModelScope.launch {
-            _currentTerm.value = Resource.Loading()
+    fun setSearchQuery(query: String) {
+        if (_searchQuery.value != query) {
+            _searchQuery.value = query
             
-            try {
-                val term = glossaryRepository.getTermById(termId)
-                if (term != null) {
-                    _currentTerm.value = Resource.Success(term)
-                } else {
-                    _currentTerm.value = Resource.Error("Термин не найден")
-                }
-            } catch (e: Exception) {
-                _currentTerm.value = Resource.Error(e.message ?: "Ошибка загрузки термина")
-                Timber.e(e, "Ошибка при загрузке термина: ${e.message}")
+            // Используем дебаунс для поиска (300 мс)
+            searchJob?.cancel()
+            searchJob = viewModelScope.launch {
+                delay(300)
+                loadTerms()
             }
         }
+    }
+    
+    /**
+     * Очистить поисковый запрос
+     */
+    fun clearSearchQuery() {
+        setSearchQuery("")
     }
 } 

@@ -12,8 +12,15 @@ import uz.dckroff.pcap.databinding.ItemGlossaryTermBinding
  * Адаптер для списка терминов глоссария
  */
 class GlossaryAdapter(
-    private val onItemClick: (GlossaryTerm) -> Unit
+    private var onItemClick: (GlossaryTerm) -> Unit
 ) : ListAdapter<GlossaryTerm, GlossaryAdapter.GlossaryViewHolder>(DIFF_CALLBACK) {
+
+    /**
+     * Устанавливает новый обработчик нажатий на элементы списка
+     */
+    fun setOnItemClickListener(listener: (GlossaryTerm) -> Unit) {
+        onItemClick = listener
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GlossaryViewHolder {
         val binding = ItemGlossaryTermBinding.inflate(

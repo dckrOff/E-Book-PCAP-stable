@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -16,19 +16,27 @@ import timber.log.Timber
 import uz.dckroff.pcap.R
 import uz.dckroff.pcap.databinding.FragmentGlossaryDetailBinding
 import uz.dckroff.pcap.utils.Resource
-import uz.dckroff.pcap.utils.showErrorSnackbar
 
 /**
  * Фрагмент для отображения детальной информации о термине из глоссария
  */
 @AndroidEntryPoint
-class GlossaryDetailFragment : Fragment() {
+class GlossaryDetailFragment : DialogFragment() {
 
     private var _binding: FragmentGlossaryDetailBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: GlossaryViewModel by viewModels()
     private val args: GlossaryDetailFragmentArgs by navArgs()
+    private var termId: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.FullScreenDialogStyle)
+        arguments?.let {
+            termId = it.getString(ARG_TERM_ID)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -144,7 +152,7 @@ class GlossaryDetailFragment : Fragment() {
                                 text = sectionTitle
                                 isClickable = true
                                 setOnClickListener {
-                                    // Навигация к разделу (будет добавлена позже)
+                                    // TODO Навигация к разделу (будет добавлена позже)
                                 }
                             }
                             binding.chipGroupRelatedSections.addView(chip)
@@ -170,4 +178,21 @@ class GlossaryDetailFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-} 
+
+    companion object {
+        private const val ARG_TERM_ID = "termId"
+
+        /**
+         * Создает новый экземпляр GlossaryDetailFragment
+         * @param termId идентификатор термина
+         * @return новый экземпляр GlossaryDetailFragment
+         */
+        fun newInstance(termId: String): GlossaryDetailFragment {
+            return GlossaryDetailFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_TERM_ID, termId)
+                }
+            }
+        }
+    }
+}
