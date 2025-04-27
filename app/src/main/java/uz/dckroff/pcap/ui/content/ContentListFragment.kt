@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -24,14 +24,19 @@ import uz.dckroff.pcap.utils.UiState
  * Фрагмент для отображения содержания учебника
  */
 @AndroidEntryPoint
-class ContentListFragment : Fragment() {
+class ContentListFragment : DialogFragment() {
     
     private var _binding: FragmentContentListBinding? = null
     private val binding get() = _binding!!
     
     private val viewModel: ContentListViewModel by viewModels()
     private lateinit var contentAdapter: ContentAdapter
-    
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.FullScreenDialogStyle)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -135,11 +140,13 @@ class ContentListFragment : Fragment() {
     
     private fun navigateToReading(subchapter: ContentItem.Subchapter) {
         try {
-            val action = ContentListFragmentDirections.actionContentListFragmentToReadingFragment(
-                subchapterId = subchapter.id,
-                subchapterTitle = subchapter.title
+            findNavController().navigate(
+                R.id.readingFragment,
+                Bundle().apply {
+                    putString("subchapterId", subchapter.id)
+                    putString("subchapterTitle", subchapter.title)
+                }
             )
-            findNavController().navigate(action)
         } catch (e: Exception) {
             Log.e("TAG","Ошибка навигации: " + e.message)
             Toast.makeText(
@@ -152,11 +159,13 @@ class ContentListFragment : Fragment() {
     
     private fun navigateToReadingForChapter(chapter: ContentItem.Chapter) {
         try {
-            val action = ContentListFragmentDirections.actionContentListFragmentToReadingFragment(
-                subchapterId = chapter.id,
-                subchapterTitle = chapter.title
+            findNavController().navigate(
+                R.id.readingFragment,
+                Bundle().apply {
+                    putString("subchapterId", chapter.id)
+                    putString("subchapterTitle", chapter.title)
+                }
             )
-            findNavController().navigate(action)
         } catch (e: Exception) {
             Log.e("TAG","Ошибка навигации: " + e.message)
             Toast.makeText(
@@ -169,11 +178,13 @@ class ContentListFragment : Fragment() {
     
     private fun navigateToReadingForSection(section: ContentItem.Section) {
         try {
-            val action = ContentListFragmentDirections.actionContentListFragmentToReadingFragment(
-                subchapterId = section.id,
-                subchapterTitle = section.title
+            findNavController().navigate(
+                R.id.readingFragment,
+                Bundle().apply {
+                    putString("subchapterId", section.id)
+                    putString("subchapterTitle", section.title)
+                }
             )
-            findNavController().navigate(action)
         } catch (e: Exception) {
             Timber.tag("TAG").e("ошибка навигации: " + e.message)
             Toast.makeText(
@@ -187,5 +198,15 @@ class ContentListFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        fun newInstance(): ContentListFragment {
+            return ContentListFragment().apply {
+                arguments = Bundle().apply {
+//                    putString(ARG_TERM_ID, termId)
+                }
+            }
+        }
     }
 } 

@@ -10,11 +10,14 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import uz.dckroff.pcap.MainActivity
 import uz.dckroff.pcap.R
 import uz.dckroff.pcap.data.model.GlossaryCategories
 import uz.dckroff.pcap.databinding.FragmentGlossaryBinding
@@ -68,12 +71,21 @@ class GlossaryFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@GlossaryFragment.adapter
         }
-        
+
         // Устанавливаем обработчик нажатий через setOnItemClickListener
         adapter.setOnItemClickListener { term ->
-            // Создаем и показываем GlossaryDetailFragment как диалог
-            val detailFragment = GlossaryDetailFragment.newInstance(term.id)
-            detailFragment.show(parentFragmentManager, "glossary_detail")
+            // Получаем MainActivity и используем его NavController для навигации
+            (requireActivity() as? MainActivity)?.let { mainActivity ->
+                Timber.d("Navigating to term detail: ${term.id}")
+                
+                // Показываем детальный контент и используем прямую навигацию по ID
+                mainActivity.navController.navigate(
+                    R.id.glossaryDetailFragment,  // используем ID фрагмента вместо action
+                    Bundle().apply {
+                        putString("termId", term.id)
+                    }
+                )
+            }
         }
     }
 

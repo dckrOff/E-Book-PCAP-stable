@@ -12,8 +12,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import uz.dckroff.pcap.MainActivity
 import uz.dckroff.pcap.R
 import uz.dckroff.pcap.databinding.FragmentDashboardBinding
+import uz.dckroff.pcap.features.glossary.GlossaryDetailFragment
+import uz.dckroff.pcap.ui.content.ContentListFragment
+import uz.dckroff.pcap.ui.content.ContentListViewModel
 
 @AndroidEntryPoint
 class DashboardFragment : Fragment() {
@@ -59,7 +63,7 @@ class DashboardFragment : Fragment() {
             },
             isWideLayout = false
         )
-        
+
         // Инициализация адаптера для рекомендуемых глав
         allChaptersAdapter = ChapterAdapter(
             onChapterClicked = { chapter ->
@@ -226,6 +230,28 @@ class DashboardFragment : Fragment() {
             }
         }
 
+        // Наблюдение за событием навигации к чтению главы
+        viewModel.navigateToReading.observe(viewLifecycleOwner) { chapter ->
+            chapter?.let {
+                // Используем MainActivity и ее NavController для навигации к списку контента главы
+                (requireActivity() as? MainActivity)?.let { mainActivity ->
+                    // Показываем детальный контент и навигируем к списку контента
+                    Timber.d("Navigating to chapter content: ${chapter.id}")
+                    
+                    mainActivity.navController.navigate(
+                        R.id.contentListFragment,
+                        Bundle().apply {
+                            putString("chapterId", chapter.id)
+                            putString("chapterTitle", chapter.title)
+                        }
+                    )
+                    
+                    // Сбрасываем событие навигации
+                    viewModel.onReadingNavigated()
+                }
+            }
+        }
+
         // Наблюдение за статусом загрузки
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             if (isLoading) {
@@ -240,6 +266,34 @@ class DashboardFragment : Fragment() {
                 Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
                 viewModel.clearError()
             }
+        }
+    }
+
+    /**
+     * Навигация к экрану содержания главы
+     */
+    private fun navigateToReading(chapter: Chapter) {
+        try {
+            // Создаем и показываем GlossaryDetailFragment как диалог
+            val contentListFragment = ContentListFragment.newInstance()
+            contentListFragment.show(parentFragmentManager, "content_list_fragment")
+
+//            val action = DashboardFragmentDirections.actionDashboardFragmentToContentListFragment()
+//            findNavController().navigate(action)
+
+            // Передаем идентификатор главы в ViewModel для фильтрации содержимого
+            val contentListViewModel = androidx.lifecycle.ViewModelProvider(requireActivity())
+                .get(ContentListViewModel::class.java)
+            contentListViewModel.filterContentByChapter(chapter.id)
+
+            Timber.d("Navigating to content list screen for chapter: ${chapter.title}")
+        } catch (e: Exception) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.navigation_error) + e.message,
+                Toast.LENGTH_SHORT
+            ).show()
+            Timber.e(e, "Error navigating to content list fragment")
         }
     }
 

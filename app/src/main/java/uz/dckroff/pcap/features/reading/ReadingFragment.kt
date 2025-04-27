@@ -155,11 +155,14 @@ class ReadingFragment : Fragment() {
                 binding.progressBar.visibility = View.VISIBLE
                 binding.contentContainer.visibility = View.GONE
 
-                val action = ReadingFragmentDirections.actionReadingFragmentSelf(
-                    subchapterId = nextSection.id,
-                    subchapterTitle = nextSection.title
+                // Используем прямой переход по ID вместо действия
+                findNavController().navigate(
+                    R.id.readingFragment,
+                    Bundle().apply {
+                        putString("subchapterId", nextSection.id)
+                        putString("subchapterTitle", nextSection.title)
+                    }
                 )
-                findNavController().navigate(action)
             } catch (e: Exception) {
                 Timber.tag("PCAP_READING").e(e, "Ошибка при навигации к следующему разделу")
                 Toast.makeText(

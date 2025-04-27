@@ -470,7 +470,7 @@ class QuizSessionFragment : Fragment() {
         
         // Переходим к экрану результатов
         findNavController().navigate(
-            R.id.action_quizSessionFragment_to_quizResultsFragment,
+            R.id.quizResultsFragment,
             bundle
         )
     }

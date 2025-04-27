@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import uz.dckroff.pcap.MainActivity
 import uz.dckroff.pcap.R
 import uz.dckroff.pcap.databinding.FragmentQuizResultsBinding
 
@@ -50,6 +52,7 @@ class QuizResultsFragment : Fragment() {
         setupRecyclerView()
         setupObservers()
         setupListeners()
+        setupBackHandling()
         
         // Загружаем результаты теста
         if (quizId.isNotEmpty()) {
@@ -60,6 +63,18 @@ class QuizResultsFragment : Fragment() {
             binding.errorView.root.visibility = View.VISIBLE
             binding.errorView.textErrorMessage.text = "Ошибка: ID теста не указан"
         }
+    }
+    
+    private fun setupBackHandling() {
+        // Обработка системной кнопки "Назад"
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    navigateToQuizList()
+                }
+            }
+        )
     }
     
     /**
@@ -78,7 +93,7 @@ class QuizResultsFragment : Fragment() {
     private fun setupListeners() {
         // Настраиваем кнопку "Назад"
         binding.toolbar.setNavigationOnClickListener {
-            findNavController().navigateUp()
+            navigateToQuizList()
         }
         
         // Настраиваем кнопку "Пройти заново"
@@ -92,9 +107,30 @@ class QuizResultsFragment : Fragment() {
             
             // Переходим к экрану прохождения теста
             findNavController().navigate(
-                R.id.action_quizResultsFragment_to_quizSessionFragment,
+                R.id.quizSessionFragment,
                 bundle
             )
+        }
+    }
+    
+    private fun navigateToQuizList() {
+        Timber.d("Navigating back to QuizListFragment")
+        
+        // Попробуем несколько способов вернуться к списку тестов
+        try {
+            // Способ 1: Использовать MainActivity и активировать соответствующую вкладку
+            (requireActivity() as? MainActivity)?.let { activity ->
+                activity.navigateToMainSection(2) // Индекс вкладки с тестами
+                return
+            }
+            
+            // Способ 2: Попробовать вернуться к конкретному фрагменту
+            findNavController().popBackStack(R.id.quizListFragment, false)
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка при навигации к списку тестов")
+            
+            // Запасной вариант: просто вернуться назад
+            findNavController().popBackStack()
         }
     }
     

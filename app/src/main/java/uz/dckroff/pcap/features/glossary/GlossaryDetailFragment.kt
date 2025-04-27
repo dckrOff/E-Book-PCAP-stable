@@ -6,37 +6,30 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.chip.Chip
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import uz.dckroff.pcap.MainActivity
 import uz.dckroff.pcap.R
 import uz.dckroff.pcap.databinding.FragmentGlossaryDetailBinding
 import uz.dckroff.pcap.utils.Resource
+import uz.dckroff.pcap.utils.showErrorSnackbar
 
 /**
  * Фрагмент для отображения детальной информации о термине из глоссария
  */
 @AndroidEntryPoint
-class GlossaryDetailFragment : DialogFragment() {
+class GlossaryDetailFragment : Fragment() {
 
     private var _binding: FragmentGlossaryDetailBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: GlossaryViewModel by viewModels()
     private val args: GlossaryDetailFragmentArgs by navArgs()
-    private var termId: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.FullScreenDialogStyle)
-        arguments?.let {
-            termId = it.getString(ARG_TERM_ID)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,7 +51,11 @@ class GlossaryDetailFragment : DialogFragment() {
     private fun setupToolbar() {
         binding.toolbar.title = getString(R.string.glossary_term_details)
         binding.toolbar.setNavigationOnClickListener {
-            findNavController().popBackStack()
+            // Используем NavController из MainActivity для навигации назад
+            if (!findNavController().popBackStack()) {
+                // Если нет предыдущего фрагмента в стеке, возвращаемся к основным разделам
+                (requireActivity() as? MainActivity)?.showMainContent()
+            }
         }
     }
 
@@ -99,41 +96,14 @@ class GlossaryDetailFragment : DialogFragment() {
                                 text = relatedTermText
                                 isClickable = true
                                 setOnClickListener {
-                                    // Используем прямую навигацию с Bundle вместо Directions
-                                    val bundle = Bundle().apply {
-                                        putString("termId", relatedTermId)
-                                    }
-                                    try {
-                                        // Пробуем найти действие в main_nav_graph.xml
-                                        findNavController().navigate(
-                                            R.id.action_glossaryDetail_self,
-                                            bundle
-                                        )
-                                    } catch (e: Exception) {
-                                        try {
-                                            // Если не получилось, пробуем действие из nav_graph.xml
-                                            findNavController().navigate(
-                                                R.id.action_glossary_detail_self,
-                                                bundle
-                                            )
-                                        } catch (e2: Exception) {
-                                            try {
-                                                // Последняя попытка - реиспользовать то же самое назначение
-                                                findNavController().navigate(
-                                                    R.id.glossaryDetailFragment,
-                                                    bundle
-                                                )
-                                            } catch (e3: Exception) {
-                                                // Если и это не работает, логируем ошибку
-                                                Timber.e(e3, "Ошибка навигации: ${e3.message}")
-                                                // Показываем сообщение пользователю
-                                                Toast.makeText(
-                                                    requireContext(),
-                                                    "Ошибка навигации",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
+                                    // Используем NavController из MainActivity для навигации к связанному термину
+                                    (requireActivity() as? MainActivity)?.let { mainActivity ->
+                                        mainActivity.navController.navigate(
+                                            R.id.glossaryDetailFragment,  // прямой переход по ID
+                                            Bundle().apply {
+                                                putString("termId", relatedTermId)
                                             }
-                                        }
+                                        )
                                     }
                                 }
                             }
@@ -152,7 +122,7 @@ class GlossaryDetailFragment : DialogFragment() {
                                 text = sectionTitle
                                 isClickable = true
                                 setOnClickListener {
-                                    // TODO Навигация к разделу (будет добавлена позже)
+                                    // Навигация к разделу (будет добавлена позже)
                                 }
                             }
                             binding.chipGroupRelatedSections.addView(chip)
@@ -177,22 +147,5 @@ class GlossaryDetailFragment : DialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-        private const val ARG_TERM_ID = "termId"
-
-        /**
-         * Создает новый экземпляр GlossaryDetailFragment
-         * @param termId идентификатор термина
-         * @return новый экземпляр GlossaryDetailFragment
-         */
-        fun newInstance(termId: String): GlossaryDetailFragment {
-            return GlossaryDetailFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_TERM_ID, termId)
-                }
-            }
-        }
     }
 }

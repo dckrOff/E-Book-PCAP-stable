@@ -97,9 +97,10 @@ class BookmarksFragment : Fragment() {
         try {
             // Переход к фрагменту чтения с ID раздела
             findNavController().navigate(
-                R.id.action_bookmarksFragment_to_readingFragment,
+                R.id.readingFragment,
                 Bundle().apply {
                     putString("subchapterId", bookmark.sectionId)
+                    putString("subchapterTitle", bookmark.sectionTitle)
                 }
             )
         } catch (e: Exception) {

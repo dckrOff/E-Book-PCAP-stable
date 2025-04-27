@@ -52,7 +52,7 @@ class QuizListFragment : Fragment() {
                     putString("quizId", quiz.id)
                 }
                 findNavController().navigate(
-                    R.id.action_quizListFragment_to_quizSessionFragment,
+                    R.id.quizSessionFragment,
                     bundle
                 )
             },
@@ -63,7 +63,7 @@ class QuizListFragment : Fragment() {
                     putString("quizId", quiz.id)
                 }
                 findNavController().navigate(
-                    R.id.action_quizListFragment_to_quizResultsFragment,
+                    R.id.quizResultsFragment,
                     bundle
                 )
             }

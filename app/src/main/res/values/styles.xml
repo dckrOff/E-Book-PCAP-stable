@@ -20,6 +20,11 @@
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
     </style>
 
+    <style name="DialogSlideAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_down</item>
+    </style>
+
     <style name="ToolbarTitleTextStyle" parent="TextAppearance.Material3.TitleLarge">
         <item name="android:textColor">?attr/colorOnBackground</item> <!-- цвет текста под тему -->
         <item name="android:colorBackground">?attr/colorBackgroundFloating</item>
