@@ -67,7 +67,22 @@ class GlossaryFragment : Fragment() {
         adapter = GlossaryAdapter { term ->
             viewModel.loadTerm(term.id)
             // Переход к экрану деталей термина
-            findNavController().navigate(R.id.action_glossaryFragment_to_glossaryDetailFragment)
+            try {
+                // Используем правильное действие навигации из графа main_nav_graph.xml
+                findNavController().navigate(
+                    R.id.glossaryDetailFragment,
+                    Bundle().apply {
+                        putString("termId", term.id)
+                    }
+                )
+            } catch (e: Exception) {
+                Timber.e(e, "Ошибка навигации к деталям термина: ${e.message}")
+                Toast.makeText(
+                    requireContext(),
+                    "Ошибка навигации: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         binding.recyclerView.apply {
