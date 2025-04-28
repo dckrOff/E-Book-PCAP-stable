@@ -1,7 +1,10 @@
 package uz.dckroff.pcap.features.reading
 
 import android.graphics.Typeface
+import android.graphics.text.LineBreaker
+import android.os.Build
 import android.os.Bundle
+import android.text.Layout
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -84,6 +87,7 @@ class ReadingFragment : Fragment() {
         // Показываем прогресс перед загрузкой
         binding.progressBar.visibility = View.VISIBLE
         binding.contentContainer.visibility = View.GONE
+        binding.fabNextSection.visibility = View.GONE // Изначально скрываем кнопку
 
         contentRenderer = ContentRenderer(requireContext(), binding.contentContainer)
         // Загружаем раздел
@@ -126,6 +130,11 @@ class ReadingFragment : Fragment() {
             Timber.d("Контент раздела: ${sectionContent.size}")
             addContentToScreen(sectionContent)
         }
+
+        // Наблюдаем за разделами, чтобы обновить видимость кнопки
+        viewModel.allSections.observe(viewLifecycleOwner) { sections ->
+            updateNextButtonVisibility()
+        }
     }
 
     private fun setupButtons() {
@@ -146,9 +155,24 @@ class ReadingFragment : Fragment() {
      */
     private fun updateNextButtonVisibility() {
         val nextSection = viewModel.getNextSection(currentSectionId)
-        binding.fabNextSection.visibility = if (nextSection != null) View.VISIBLE else View.GONE
+
+        // Проверяем, есть ли следующий раздел и отображаем кнопку соответственно
+        if (nextSection != null) {
+            binding.fabNextSection.visibility = View.VISIBLE
+            Timber.tag("PCAP_READING")
+                .d("Кнопка 'Далее' видима. Следующий раздел: ${nextSection.title}")
+        } else {
+            binding.fabNextSection.visibility = View.GONE
+            Timber.tag("PCAP_READING")
+                .d("Кнопка 'Далее' скрыта. Следующий раздел отсутствует.")
+        }
+
+        // Выводим дополнительную информацию для отладки
         Timber.tag("PCAP_READING")
-            .e("Обновлена видимость кнопки 'Далее'. Следующий раздел: ${nextSection?.title ?: "нет"}")
+            .e(
+                "Обновлена видимость кнопки 'Далее'. Следующий раздел: ${nextSection?.title ?: "нет"}, " +
+                        "Видимость: ${if (binding.fabNextSection.visibility == View.VISIBLE) "VISIBLE" else "GONE"}"
+            )
     }
 
     /**
@@ -173,8 +197,9 @@ class ReadingFragment : Fragment() {
                 findNavController().navigate(
                     R.id.readingFragment,
                     Bundle().apply {
-                        putString("subchapterId", nextSection.id)
-                        putString("subchapterTitle", nextSection.title)
+                        putString("sectionId", nextSection.id)
+                        putString("chapterId", nextSection.chapterId ?: chapterId)
+                        putString("sectionTitle", nextSection.title)
                     }
                 )
             } catch (e: Exception) {
@@ -221,6 +246,9 @@ class ReadingFragment : Fragment() {
                 }
             }
 
+            // После добавления контента обновляем видимость кнопки
+            updateNextButtonVisibility()
+
             Timber.tag("PCAP_READING").e("Контент успешно добавлен для раздела: $sectionId")
         } catch (e: Exception) {
             Timber.tag("PCAP_READING")
@@ -237,6 +265,9 @@ class ReadingFragment : Fragment() {
                 }
                 binding.contentContainer.addView(errorTextView)
             }
+
+            // Скрываем кнопку навигации в случае ошибки
+            binding.fabNextSection.visibility = View.GONE
         }
     }
 
@@ -250,9 +281,13 @@ class ReadingFragment : Fragment() {
             textSize = 16f
             setPadding(0, 8, 0, 8)
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
+            }
+
             // Выделение текста, если нужно
             if (content.isHighlighted) {
-                setBackgroundColor(resources.getColor(R.color.text_color_easy, null))
+                setBackgroundColor(resources.getColor(R.color.text_color_medium, null))
                 setPadding(16, 16, 16, 16)
             }
         }

@@ -23,7 +23,7 @@ enum class QuizDifficulty {
     EASY,
     MEDIUM,
     HARD;
-
+    
     fun getLocalizedName(): String {
         return when (this) {
             EASY -> "Легкий"
@@ -31,7 +31,7 @@ enum class QuizDifficulty {
             HARD -> "Сложный"
         }
     }
-
+    
     fun getColorRes(): Int {
         return when (this) {
             EASY -> android.R.color.holo_green_light

@@ -141,9 +141,9 @@ class QuizRepositoryImpl @Inject constructor(
                 .await()
                 
             if (!doc.exists()) {
-                return null
-            }
-            
+        return null
+    }
+    
             val title = doc.getString("title") ?: return null
             val description = doc.getString("description") ?: ""
             val topic = doc.getString("topic") ?: ""

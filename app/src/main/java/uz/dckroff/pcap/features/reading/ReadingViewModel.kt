@@ -32,25 +32,24 @@ class ReadingViewModel @Inject constructor(
     private val _sectionContent = MutableLiveData<List<uz.dckroff.pcap.data.model.SectionContent>>()
     val sectionContent: LiveData<List<uz.dckroff.pcap.data.model.SectionContent>> = _sectionContent
 
+    // Инициализация без загрузки разделов, так как chapterId еще не доступен
     init {
-//        loadAllSections()
+        Timber.tag("PCAP_READING").d("Инициализация ReadingViewModel")
     }
 
     /**
-     * Загрузить все разделы
+     * Загрузить все разделы для указанной главы
      */
-    private fun loadAllSections() {
+    private fun loadAllSections(chapterId: String) {
         viewModelScope.launch {
-//            try {
-//                // Получаем демо-данные из репозитория
-//                val chapters = contentRepository.getDummyContentStructure()
-//                // Собираем все разделы из всех глав
-//                val sections = chapters.flatMap { it.sections }
-//                _allSections.postValue(sections)
-//                Timber.tag("PCAP_READING").d("Загружено ${sections.size} разделов")
-//            } catch (e: Exception) {
-//                Timber.tag("PCAP_READING").e(e, "Ошибка при загрузке разделов")
-//            }
+            try {
+                val sections = contentRepository.getSectionsForChapter(chapterId).first()
+                _allSections.postValue(sections)
+                Timber.tag("PCAP_READING")
+                    .d("Загружено ${sections.size} разделов для главы $chapterId")
+            } catch (e: Exception) {
+                Timber.tag("PCAP_READING").e(e, "Ошибка при загрузке разделов для главы $chapterId")
+            }
         }
     }
 
@@ -58,12 +57,15 @@ class ReadingViewModel @Inject constructor(
      * Загрузить информацию о разделе по ID
      */
     fun loadSection(chapterId: String, sectionId: String) {
-        Timber.tag("PCAP_READING").d("Загрузка раздела с ID: $sectionId")
+        Timber.tag("PCAP_READING").d("Загрузка раздела с ID: $sectionId, глава: $chapterId")
 
-        if (sectionId.isEmpty()) {
-            Timber.tag("PCAP_READING").e("Ошибка: пустой ID раздела")
+        if (sectionId.isEmpty() || chapterId.isEmpty()) {
+            Timber.tag("PCAP_READING").e("Ошибка: пустой ID раздела или главы")
             return
         }
+
+        // Загружаем все разделы для этой главы
+        loadAllSections(chapterId)
 
         viewModelScope.launch {
             try {
@@ -88,11 +90,6 @@ class ReadingViewModel @Inject constructor(
                 Timber.tag("PCAP_READING")
                     .d("Загружен раздел: ${section.title} с ${content.size} элементами контента")
 
-                // Обновляем общий список разделов, если нужно
-                if (_allSections.value.isNullOrEmpty()) {
-                    _allSections.postValue(sections)
-                }
-
                 // Обновляем прогресс чтения
 //                userProgressRepository.updateReadingProgress(sectionId, 50) // 50% при открытии
 
@@ -109,6 +106,7 @@ class ReadingViewModel @Inject constructor(
         Timber.tag("PCAP_READING").d("Поиск следующего раздела после: $currentSectionId")
 
         val sections = _allSections.value
+        Timber.d("section is null: ${sections.isNullOrEmpty()}")
         if (sections.isNullOrEmpty()) {
             Timber.tag("PCAP_READING").d("Нет доступных разделов для поиска следующего")
             return null
