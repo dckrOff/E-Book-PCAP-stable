@@ -100,9 +100,11 @@ class GlossaryListViewModel @Inject constructor(
     }
 
     /**
-     * Поиск терминов
+     * Установка поискового запроса
      */
-    fun searchTerms(query: String) {
+    fun setSearchQuery(query: String) {
+        if (_searchQuery.value == query) return
+        
         _searchQuery.value = query
         filterAndUpdateTerms()
     }
@@ -111,42 +113,33 @@ class GlossaryListViewModel @Inject constructor(
      * Фильтрация и обновление списка терминов
      */
     private fun filterAndUpdateTerms() {
+        val query = _searchQuery.value?.lowercase() ?: ""
         val category = _selectedCategory.value
-        val query = _searchQuery.value ?: ""
         
         val filteredTerms = allTerms.filter { term ->
-            // Фильтр по категории
-            val categoryMatch = category == null || term.category == category
+            val matchesQuery = query.isEmpty() || 
+                term.term.lowercase().contains(query) || 
+                term.definition.lowercase().contains(query)
             
-            // Фильтр по поисковому запросу
-            val queryMatch = query.isEmpty() || 
-                term.term.contains(query, ignoreCase = true) || 
-                term.definition.contains(query, ignoreCase = true)
+            val matchesCategory = category == null || term.category == category
             
-            categoryMatch && queryMatch
+            matchesQuery && matchesCategory
         }
         
         _terms.value = filteredTerms
     }
 
     /**
-     * Очистка ошибки
+     * Выбор термина для детального просмотра
      */
-    fun clearError() {
-        _error.value = null
-    }
-
-    /**
-     * Обработка клика по термину
-     */
-    fun onTermClick(term: GlossaryTerm) {
+    fun selectTerm(term: GlossaryTerm) {
         _navigation.value = term
     }
 
     /**
-     * Обработка завершения навигации
+     * Сброс навигации
      */
-    fun navigationHandled() {
+    fun resetNavigation() {
         _navigation.value = null
     }
 } 

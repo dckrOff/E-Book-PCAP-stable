@@ -10,4 +10,4 @@ data class Chapter(
     val progress: Int,
     val order: Int,
     val parentId: String? = null
-) 
+)

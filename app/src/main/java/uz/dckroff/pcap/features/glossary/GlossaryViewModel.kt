@@ -9,7 +9,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import uz.dckroff.pcap.data.model.GlossaryCategories
 import uz.dckroff.pcap.data.model.GlossaryTerm
 import uz.dckroff.pcap.data.repository.GlossaryRepository
 import uz.dckroff.pcap.utils.Resource
@@ -23,6 +22,10 @@ class GlossaryViewModel @Inject constructor(
     private val glossaryRepository: GlossaryRepository
 ) : ViewModel() {
     
+    companion object {
+        const val ALL_CATEGORIES = "Все категории"
+    }
+    
     // Список терминов для отображения
     private val _terms = MutableLiveData<List<GlossaryTerm>>()
     val terms: LiveData<List<GlossaryTerm>> = _terms
@@ -32,7 +35,7 @@ class GlossaryViewModel @Inject constructor(
     val categories: LiveData<List<String>> = _categories
     
     // Выбранная категория
-    private val _selectedCategory = MutableLiveData(GlossaryCategories.ALL)
+    private val _selectedCategory = MutableLiveData(ALL_CATEGORIES)
     val selectedCategory: LiveData<String> = _selectedCategory
     
     // Текст поиска
@@ -70,7 +73,8 @@ class GlossaryViewModel @Inject constructor(
     private fun loadCategories() {
         viewModelScope.launch {
             try {
-                val categoriesList = glossaryRepository.getAllCategories()
+                val fetchedCategories = glossaryRepository.getAllCategories()
+                val categoriesList = listOf(ALL_CATEGORIES) + fetchedCategories
                 _categories.value = categoriesList
                 Timber.d("Загружено ${categoriesList.size} категорий")
             } catch (e: Exception) {
@@ -88,7 +92,7 @@ class GlossaryViewModel @Inject constructor(
         
         viewModelScope.launch {
             try {
-                val category = _selectedCategory.value ?: GlossaryCategories.ALL
+                val category = _selectedCategory.value ?: ALL_CATEGORIES
                 val query = _searchQuery.value ?: ""
                 
                 val result = if (query.isBlank()) {
@@ -99,7 +103,7 @@ class GlossaryViewModel @Inject constructor(
                     val searchResults = glossaryRepository.searchTerms(query)
                     
                     // Если выбрана категория "Все", возвращаем все результаты поиска
-                    if (category == GlossaryCategories.ALL) {
+                    if (category == ALL_CATEGORIES) {
                         searchResults
                     } else {
                         // Иначе фильтруем результаты поиска по категории
@@ -120,6 +124,29 @@ class GlossaryViewModel @Inject constructor(
                 _empty.value = true
             } finally {
                 _loading.value = false
+            }
+        }
+    }
+    
+    /**
+     * Загрузить термин по ID
+     */
+    fun loadTerm(termId: String) {
+        _currentTerm.value = Resource.Loading()
+        
+        viewModelScope.launch {
+            try {
+                val term = glossaryRepository.getTermById(termId)
+                if (term != null) {
+                    _currentTerm.value = Resource.Success(term)
+                    Timber.d("Загружен термин: ${term.term}")
+                } else {
+                    _currentTerm.value = Resource.Error("Термин не найден")
+                    Timber.e("Термин с ID $termId не найден")
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Ошибка при загрузке термина: ${e.message}")
+                _currentTerm.value = Resource.Error("Ошибка при загрузке термина: ${e.message}")
             }
         }
     }

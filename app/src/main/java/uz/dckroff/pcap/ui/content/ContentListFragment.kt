@@ -25,12 +25,21 @@ import uz.dckroff.pcap.utils.UiState
  */
 @AndroidEntryPoint
 class ContentListFragment : DialogFragment() {
-    
+
     private var _binding: FragmentContentListBinding? = null
     private val binding get() = _binding!!
-    
+
     private val viewModel: ContentListViewModel by viewModels()
-    private lateinit var contentAdapter: ContentAdapter
+    private lateinit var sectionAdapter: SectionAdapter
+
+    private val chapterId: String? by lazy {
+        arguments?.getString("chapterId")
+    }
+
+    private val chapterTitle: String? by lazy {
+        arguments?.getString("chapterTitle")
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,39 +54,35 @@ class ContentListFragment : DialogFragment() {
         _binding = FragmentContentListBinding.inflate(inflater, container, false)
         return binding.root
     }
-    
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         setupRecyclerView()
         setupSwipeRefresh()
         observeViewModel()
-        
-        viewModel.loadContent()
+
+        viewModel.loadContent(chapterId!!)
     }
-    
+
     private fun setupRecyclerView() {
-        contentAdapter = ContentAdapter(
-            onChapterClick = { chapter ->
-                navigateToReadingForChapter(chapter)
-            },
-            onSubchapterClick = { subchapter ->
-                navigateToReading(subchapter)
-            }
-        )
-        
+        sectionAdapter = SectionAdapter { section ->
+            Timber.d("Click on section: " + section.title)
+            navigateToReadingForSection(section)
+        }
+
         binding.rvContent.apply {
-            adapter = contentAdapter
+            adapter = sectionAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
     }
-    
+
     private fun setupSwipeRefresh() {
         binding.swipeRefresh.setOnRefreshListener {
-            viewModel.loadContent(forceRefresh = true)
+            viewModel.loadContent(chapterId = chapterId!!, forceRefresh = true)
         }
     }
-    
+
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.contentState.collectLatest { state ->
@@ -90,7 +95,7 @@ class ContentListFragment : DialogFragment() {
             }
         }
     }
-    
+
     private fun showLoading() {
         binding.apply {
             progressBar.visibility = View.VISIBLE
@@ -100,8 +105,8 @@ class ContentListFragment : DialogFragment() {
             emptyView.visibility = View.GONE
         }
     }
-    
-    private fun showContent(chapters: List<ContentItem.Chapter>) {
+
+    private fun showContent(sections: List<ContentItem.Section>) {
         binding.apply {
             progressBar.visibility = View.GONE
             swipeRefresh.isRefreshing = false
@@ -109,10 +114,10 @@ class ContentListFragment : DialogFragment() {
             errorView.visibility = View.GONE
             emptyView.visibility = View.GONE
         }
-        
-        contentAdapter.submitChaptersWithSubchapters(chapters)
+
+        sectionAdapter.submitList(sections)
     }
-    
+
     private fun showError(message: String) {
         binding.apply {
             progressBar.visibility = View.GONE
@@ -120,14 +125,14 @@ class ContentListFragment : DialogFragment() {
             rvContent.visibility = View.GONE
             errorView.visibility = View.VISIBLE
             emptyView.visibility = View.GONE
-            
+
             tvErrorMessage.text = message
             btnRetry.setOnClickListener {
-                viewModel.loadContent(true)
+                viewModel.loadContent(chapterId = chapterId!!, forceRefresh = true)
             }
         }
     }
-    
+
     private fun showEmpty() {
         binding.apply {
             progressBar.visibility = View.GONE
@@ -137,52 +142,15 @@ class ContentListFragment : DialogFragment() {
             emptyView.visibility = View.VISIBLE
         }
     }
-    
-    private fun navigateToReading(subchapter: ContentItem.Subchapter) {
-        try {
-            findNavController().navigate(
-                R.id.readingFragment,
-                Bundle().apply {
-                    putString("subchapterId", subchapter.id)
-                    putString("subchapterTitle", subchapter.title)
-                }
-            )
-        } catch (e: Exception) {
-            Log.e("TAG","Ошибка навигации: " + e.message)
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.navigation_error) + e.message,
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-    
-    private fun navigateToReadingForChapter(chapter: ContentItem.Chapter) {
-        try {
-            findNavController().navigate(
-                R.id.readingFragment,
-                Bundle().apply {
-                    putString("subchapterId", chapter.id)
-                    putString("subchapterTitle", chapter.title)
-                }
-            )
-        } catch (e: Exception) {
-            Log.e("TAG","Ошибка навигации: " + e.message)
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.navigation_error) + e.message,
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-    
+
     private fun navigateToReadingForSection(section: ContentItem.Section) {
         try {
             findNavController().navigate(
                 R.id.readingFragment,
                 Bundle().apply {
-                    putString("subchapterId", section.id)
-                    putString("subchapterTitle", section.title)
+                    putString("sectionId", section.id)
+                    putString("chapterId", section.chapterId)
+                    putString("sectionTitle", section.title)
                 }
             )
         } catch (e: Exception) {
@@ -194,7 +162,7 @@ class ContentListFragment : DialogFragment() {
             ).show()
         }
     }
-    
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -203,9 +171,7 @@ class ContentListFragment : DialogFragment() {
     companion object {
         fun newInstance(): ContentListFragment {
             return ContentListFragment().apply {
-                arguments = Bundle().apply {
-//                    putString(ARG_TERM_ID, termId)
-                }
+                arguments = Bundle().apply {}
             }
         }
     }

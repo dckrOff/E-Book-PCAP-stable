@@ -10,21 +10,21 @@ import com.google.android.material.snackbar.Snackbar
  * @param actionText текст кнопки действия (по умолчанию "OK")
  * @param action действие, которое будет выполнено при нажатии на кнопку
  */
-fun Fragment.showErrorSnackbar(
-    message: String,
-    actionText: String = "OK",
-    action: (() -> Unit)? = null
-) {
-    view?.let { rootView ->
-        val snackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_LONG)
-        
-        action?.let {
-            snackbar.setAction(actionText) { it() }
-        }
-        
-        snackbar.show()
-    }
-}
+//fun Fragment.showErrorSnackbar(
+//    message: String,
+//    actionText: String = "OK",
+//    action: (() -> Unit)? = null
+//) {
+//    view?.let { rootView ->
+//        val snackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_LONG)
+//
+//        action?.let {
+//            snackbar.setAction(actionText) { it() }
+//        }
+//
+//        snackbar.show()
+//    }
+//}
 
 /**
  * Отображает Snackbar с сообщением

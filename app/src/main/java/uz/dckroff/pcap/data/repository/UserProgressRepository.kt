@@ -132,7 +132,7 @@ class UserProgressRepository @Inject constructor(
     private fun refreshOverallProgressFromFirestore() {
         try {
             firestore.collection("userProgress")
-                .document("currentUser") // В будущем здесь будет идентификатор текущего пользователя
+                .document("currentUser")
                 .get()
                 .addOnSuccessListener { document ->
                     val progress = document.getLong("overallProgress")?.toInt() ?: 0

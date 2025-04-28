@@ -65,17 +65,17 @@ class QuizAdapter(
                 )
 
                 // Информация о тесте
-                questionsCountTextView.text = "${quiz.questionsCount} вопросов"
+                questionsCountTextView.text = "${quiz.questions.size} вопросов"
                 timeLimitTextView.text = "${quiz.timeLimit} минут"
 
                 // Показываем результат, если тест выполнен
                 if (quiz.isCompleted) {
                     scoreTextView.text = "${quiz.lastScore}%"
                     scoreTextView.visibility = View.VISIBLE
-                    
+
                     // Показываем кнопку "Результаты"
                     resultButton.visibility = View.VISIBLE
-                    
+
                     // Меняем текст кнопки старта
                     startButton.text = "Пройти снова"
                 } else {

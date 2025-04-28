@@ -7,8 +7,8 @@ data class Quiz(
     val id: String,
     val title: String,
     val description: String,
+    val topic: String,
     val difficulty: QuizDifficulty,
-    val questionsCount: Int,
     val timeLimit: Int, // в минутах
     val isCompleted: Boolean = false,
     val lastScore: Int = 0, // процент правильных ответов, от 0 до 100
@@ -23,7 +23,7 @@ enum class QuizDifficulty {
     EASY,
     MEDIUM,
     HARD;
-    
+
     fun getLocalizedName(): String {
         return when (this) {
             EASY -> "Легкий"
@@ -31,12 +31,23 @@ enum class QuizDifficulty {
             HARD -> "Сложный"
         }
     }
-    
+
     fun getColorRes(): Int {
         return when (this) {
             EASY -> android.R.color.holo_green_light
             MEDIUM -> android.R.color.holo_orange_light
             HARD -> android.R.color.holo_red_light
+        }
+    }
+
+    companion object {
+        fun fromString(value: String): QuizDifficulty {
+            return when (value.lowercase()) {
+                "easy" -> EASY
+                "medium" -> MEDIUM
+                "hard" -> HARD
+                else -> MEDIUM
+            }
         }
     }
 }
@@ -56,8 +67,8 @@ enum class QuestionType {
 data class QuizQuestion(
     val id: String,
     val text: String,
-    val type: QuestionType,
     val options: List<QuizOption>,
+    val type: QuestionType = QuestionType.SINGLE_CHOICE,
     val explanation: String? = null // объяснение правильного ответа
 )
 

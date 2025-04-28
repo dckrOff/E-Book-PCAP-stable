@@ -1,27 +1,16 @@
-package uz.dckroff.pcap.data.local.util
+package uz.dckroff.pcap.data.local.converter
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import uz.dckroff.pcap.data.model.ContentItem
-import java.util.Date
 
 /**
- * Конвертеры типов для Room
+ * Конвертеры типов для Room Database
  */
 class Converters {
     private val gson = Gson()
-    
-    @TypeConverter
-    fun fromTimestamp(value: Long?): Date? {
-        return value?.let { Date(it) }
-    }
-    
-    @TypeConverter
-    fun dateToTimestamp(date: Date?): Long? {
-        return date?.time
-    }
-    
+
     /**
      * Конвертировать список разделов в строку JSON
      */

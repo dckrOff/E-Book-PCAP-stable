@@ -15,6 +15,7 @@
 
 **Поля документа:**
 - `title` (string) - название раздела
+- `description` (string) - описание раздела
 - `order` (number) - порядок отображения раздела
 - `progress` (number) - прогресс выполнения (0-100%)
 - `contentUrl` (string, опционально) - ссылка на контент в формате `content/{chapterId}/{sectionId}`
@@ -87,6 +88,15 @@
 - `definition` (string) - определение термина
 - `category` (string, опционально) - категория термина
 - `relatedTerms` (array, опционально) - массив связанных терминов
+- `relatedSections` (array) - массив связанных разделов
+
+**Структура объекта связанного раздела:**
+```javascript
+{
+  id: string,     // ID раздела
+  title: string   // название раздела (chapterId)
+}
+```
 
 ## Особенности и зависимости
 

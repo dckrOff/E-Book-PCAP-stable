@@ -1,6 +1,7 @@
 package uz.dckroff.pcap.features.glossary
 
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -112,14 +113,17 @@ class GlossaryDetailFragment : Fragment() {
 
                         // Загрузка связанных разделов
                         binding.relatedSectionsLayout.isVisible =
-                            term.relatedSectionIds.isNotEmpty()
+                            term.relatedSections.isNotEmpty()
                         binding.chipGroupRelatedSections.removeAllViews()
 
-                        term.relatedSectionIds.forEach { sectionId ->
+                        term.relatedSections.forEach { section ->
                             val sectionTitle =
-                                "Раздел $sectionId" // Здесь позже можно добавить получение реального заголовка раздела
+                                "Раздел ${section.title}"
                             val chip = Chip(requireContext()).apply {
                                 text = sectionTitle
+                                maxWidth = 200 // Ограничим ширину в 200 пикселей
+                                ellipsize = TextUtils.TruncateAt.END
+                                maxLines = 1
                                 isClickable = true
                                 setOnClickListener {
                                     // Навигация к разделу (будет добавлена позже)

@@ -2,8 +2,11 @@ package uz.dckroff.pcap.data.repository
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import timber.log.Timber
 import uz.dckroff.pcap.data.model.ContentItem
 import uz.dckroff.pcap.data.repository.ContentRepository
@@ -23,33 +26,24 @@ class BookRepository @Inject constructor(
      * @param forceRefresh Принудительное обновление данных
      * @return [Resource] с результатом операции
      */
-    suspend fun getContent(forceRefresh: Boolean = false): Resource<List<ContentItem.Chapter>> {
+    suspend fun getContent(
+        chapterId: String,
+        forceRefresh: Boolean = false
+    ): Resource<List<ContentItem.Section>> {
         return try {
-            // Для демонстрации используем временные данные из ContentRepository
-            // В реальном приложении здесь будет логика обращения к API или кэшу
-            val chapters = contentRepository.getDummyContentStructure()
+            val chapters = contentRepository.getSectionsForChapter(chapterId = chapterId).first()
 
             // Преобразуем данные из ContentRepository к формату ContentItem
-            val contentItems = chapters.map { chapter ->
-                ContentItem.Chapter(
-                    id = chapter.id,
-                    title = chapter.title.substringAfter("Глава ${chapter.number}. ").trim(),
-                    description = chapter.description,
-                    order = chapter.order,
-                    progress = chapter.progress,
-                    number = chapter.number,
-                    hasSubchapters = chapter.hasSubchapters,
-                    sections = chapter.sections.map { section ->
-                        ContentItem.Section(
-                            id = section.id,
-                            chapterId = section.chapterId,
-                            title = section.title.substringAfter("${chapter.number}.${section.order} ").trim(),
-                            order = section.order,
-                            progress = section.progress,
-                            contentUrl = section.contentUrl,
-                            number = "${chapter.number}.${section.order}"
-                        )
-                    }
+            val contentItems = chapters.map { section ->
+                ContentItem.Section(
+                    id = section.id,
+                    chapterId = section.chapterId,
+                    title = section.title,
+                    description = section.description,
+                    order = section.order,
+                    number = section.number,
+                    progress = section.progress,
+                    contentUrl = section.contentUrl
                 )
             }
 

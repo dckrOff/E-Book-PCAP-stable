@@ -1,12 +1,17 @@
 package uz.dckroff.pcap.features.dashboard
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import uz.dckroff.pcap.data.repository.ContentRepository
@@ -28,8 +33,8 @@ class DashboardViewModel @Inject constructor(
     val recentChapters: LiveData<List<Chapter>> = _recentChapters
 
     // Рекомендуемые главы
-    private val _recommendedChapters = MutableLiveData<List<Chapter>>()
-    val AllChapters: LiveData<List<Chapter>> = _recommendedChapters
+    private val _allChapters = MutableLiveData<List<Chapter>>()
+    val allChapters: LiveData<List<Chapter>> = _allChapters
 
     // Статус загрузки
     private val _isLoading = MutableLiveData<Boolean>()
@@ -38,12 +43,13 @@ class DashboardViewModel @Inject constructor(
     // Обработка ошибок
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
-    
+
     // Событие для навигации к чтению главы
     private val _navigateToReading = MutableLiveData<Chapter?>()
     val navigateToReading: LiveData<Chapter?> = _navigateToReading
 
     init {
+        Log.e("TAG", "Загрузка данных при инициализации ViewModel")
         // Загрузка данных при инициализации ViewModel
         loadDashboardData()
     }
@@ -54,37 +60,47 @@ class DashboardViewModel @Inject constructor(
     private fun loadDashboardData() {
         viewModelScope.launch {
             try {
+                Timber.d("Загрузка данных для главного экрана...")
                 _isLoading.value = true
 
-                // Загружаем общий прогресс
-                userProgressRepository.getOverallProgress()
-                    .catch { e -> 
-                        Timber.e(e, "Error loading overall progress")
-                        _error.value = e.message
-                    }
-                    .collectLatest { progress ->
-                        _overallProgress.value = progress
-                    }
-
-                // Загружаем недавно просмотренные главы
-                contentRepository.getRecentChapters()
-                    .catch { e -> 
-                        Timber.e(e, "Error loading recent chapters")
-                        _error.value = e.message
-                    }
-                    .collectLatest { chapters ->
-                        _recentChapters.value = chapters
+                coroutineScope {
+                    val overallProgressDeferred = async {
+                        userProgressRepository.getOverallProgress()
+                            .catch { e ->
+                                Timber.e(e, "Error loading overall progress")
+                                _error.value = e.message
+                            }
+                            .firstOrNull() // сразу берём первое значение
                     }
 
-                // Загружаем рекомендуемые главы
-                contentRepository.getRecommendedChapters()
-                    .catch { e -> 
-                        Timber.e(e, "Error loading recommended chapters")
-                        _error.value = e.message
+                    val recentChaptersDeferred = async {
+                        contentRepository.getRecentChapters()
+                            .catch { e ->
+                                Timber.e(e, "Error loading recent chapters")
+                                _error.value = e.message
+                            }
+                            .firstOrNull()
                     }
-                    .collectLatest { chapters ->
-                        _recommendedChapters.value = chapters
+
+                    val allChaptersDeferred = async {
+                        contentRepository.getChapters()
+                            .catch { e ->
+                                Timber.e(e, "Error loading recommended chapters")
+                                _error.value = e.message
+                            }
+                            .firstOrNull()
                     }
+
+                    // Ждём все результаты
+                    _overallProgress.value = overallProgressDeferred.await() ?: 0
+                    Timber.d("Получение прогресса: ${_overallProgress.value}")
+
+                    _recentChapters.value = recentChaptersDeferred.await() ?: emptyList()
+                    Timber.d("Загружены последние главы: ${_recentChapters.value?.size} шт.")
+
+                    _allChapters.value = allChaptersDeferred.await() ?: emptyList()
+                    Timber.d("Загружено всех глав: ${_allChapters.value?.size} шт.")
+                }
 
                 _isLoading.value = false
             } catch (e: Exception) {
@@ -94,6 +110,7 @@ class DashboardViewModel @Inject constructor(
             }
         }
     }
+
 
     /**
      * Обработка нажатия на кнопку "Продолжить обучение"
@@ -124,12 +141,12 @@ class DashboardViewModel @Inject constructor(
      */
     fun onChapterClicked(chapter: Chapter) {
         Timber.d("Chapter clicked: ${chapter.title}")
-        
+
         viewModelScope.launch {
             try {
                 // Обновляем недавно просмотренную главу
                 contentRepository.updateRecentChapter(chapter.id)
-                
+
                 // Инициируем навигацию к экрану содержания
                 _navigateToReading.value = chapter
             } catch (e: Exception) {
@@ -138,7 +155,7 @@ class DashboardViewModel @Inject constructor(
             }
         }
     }
-    
+
     /**
      * Метод для сброса события навигации после его обработки
      */
@@ -158,5 +175,27 @@ class DashboardViewModel @Inject constructor(
      */
     fun refreshData() {
         loadDashboardData()
+    }
+
+    /**
+     * Обновить данные из Firebase
+     */
+    fun refreshDataFromFirebase() {
+        _isLoading.value = true
+        viewModelScope.launch {
+            try {
+                // Принудительно обновляем главы
+                contentRepository.refreshChaptersFromFirestore()
+
+                // Загружаем данные снова после обновления
+                loadDashboardData()
+
+                _error.value = "Данные успешно обновлены"
+            } catch (e: Exception) {
+                _isLoading.value = false
+                _error.value = "Ошибка при обновлении данных: ${e.message}"
+                Timber.e(e, "Error refreshing data from Firebase")
+            }
+        }
     }
 } 

@@ -13,10 +13,10 @@
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
-            app:titleTextAppearance="@style/ToolbarTitleTextStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_back"
+            app:titleTextAppearance="@style/ToolbarTitleTextStyle"
             app:titleTextColor="?attr/colorOnSurface" />
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -35,9 +35,9 @@
             <TextView
                 android:id="@+id/textTitle"
                 android:layout_width="match_parent"
-                android:textColor="@color/textColorPrimary"
                 android:layout_height="wrap_content"
                 android:textAppearance="?textAppearanceHeadlineMedium"
+                android:textColor="@color/textColorPrimary"
                 android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="TCP/IP" />
@@ -55,10 +55,10 @@
                 android:id="@+id/definitionLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/textColorPrimary"
                 android:layout_marginTop="16dp"
                 android:text="@string/definition"
                 android:textAppearance="?textAppearanceBodyLarge"
+                android:textColor="@color/textColorPrimary"
                 android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@id/chipCategory" />
 
@@ -67,8 +67,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:textColor="@color/textColorPrimary"
                 android:textAppearance="?textAppearanceBodyLarge"
+                android:textColor="@color/textColorPrimary"
                 app:layout_constraintTop_toBottomOf="@id/definitionLabel"
                 tools:text="Набор сетевых протоколов, обеспечивающих передачу данных между устройствами в сети. Состоит из четырех уровней: прикладной, транспортный, сетевой и канальный." />
 
@@ -85,18 +85,51 @@
                     android:id="@+id/relatedTermsLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/textColorPrimary"
                     android:text="@string/related_terms"
                     android:textAppearance="?textAppearanceBodyLarge"
+                    android:textColor="@color/textColorPrimary"
                     android:textStyle="bold"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chipGroupRelatedTerms"
+                <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@id/relatedTermsLabel" />
+                    android:orientation="horizontal"
+                    android:scrollbars="none"
+                    app:layout_constraintTop_toBottomOf="@id/relatedTermsLabel">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupRelatedTerms"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.chip.Chip
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxWidth="200dp"
+                            android:maxLines="1"
+                            android:text="MPP (Массово-параллельная архитектура, Massively Parallel Processing)" />
+
+                        <com.google.android.material.chip.Chip
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxWidth="200dp"
+                            android:maxLines="1"
+                            android:text="Закон Амдала" />
+
+                        <com.google.android.material.chip.Chip
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxWidth="200dp"
+                            android:maxLines="1"
+                            android:text="OpenMP " />
+
+                    </com.google.android.material.chip.ChipGroup>
+                </HorizontalScrollView>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -113,18 +146,51 @@
                     android:id="@+id/relatedSectionsLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/textColorPrimary"
                     android:text="@string/related_sections"
                     android:textAppearance="?textAppearanceBodyLarge"
+                    android:textColor="@color/textColorPrimary"
                     android:textStyle="bold"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chipGroupRelatedSections"
+                <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@id/relatedSectionsLabel" />
+                    android:orientation="horizontal"
+                    android:scrollbars="none"
+                    app:layout_constraintTop_toBottomOf="@id/relatedSectionsLabel">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupRelatedSections"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.chip.Chip
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxWidth="200dp"
+                            android:maxLines="1"
+                            android:text="Архитектура распределённой памяти (Distributed Memory Architecture)" />
+
+                        <com.google.android.material.chip.Chip
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxWidth="200dp"
+                            android:maxLines="1"
+                            android:text="Алгоритмы параллельных вычислений (Parallel Algorithms)" />
+
+                        <com.google.android.material.chip.Chip
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxWidth="200dp"
+                            android:maxLines="1"
+                            android:text="Балансировка нагрузки (Load Balancing) " />
+
+                    </com.google.android.material.chip.ChipGroup>
+                </HorizontalScrollView>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

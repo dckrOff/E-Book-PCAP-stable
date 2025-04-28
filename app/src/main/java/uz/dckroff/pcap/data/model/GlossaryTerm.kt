@@ -7,7 +7,7 @@ data class GlossaryTerm(
     val id: String,
     val term: String,
     val definition: String,
-    val category: String,
+    val category: String = "",
     val relatedTerms: List<String> = emptyList(),
-    val relatedSectionIds: List<String> = emptyList()
-) 
+    val relatedSections: List<GlossaryRelatedSections> = emptyList()
+)

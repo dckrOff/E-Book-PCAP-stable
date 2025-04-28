@@ -44,8 +44,7 @@ sealed class SectionContent {
         override val id: String,
         val content: String,
         val language: String = "",
-        val caption: String = "",
-        val lineNumbers: Boolean = true
+        val caption: String = ""
     ) : SectionContent()
     
     /**
@@ -73,8 +72,8 @@ sealed class SectionContent {
      */
     data class Table(
         override val id: String,
-        val rows: List<List<String>>,
         val headers: List<String>,
+        val rows: List<List<String>>,
         val caption: String = ""
     ) : SectionContent()
     

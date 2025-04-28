@@ -19,7 +19,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import uz.dckroff.pcap.MainActivity
 import uz.dckroff.pcap.R
-import uz.dckroff.pcap.data.model.GlossaryCategories
 import uz.dckroff.pcap.databinding.FragmentGlossaryBinding
 import uz.dckroff.pcap.utils.showErrorSnackbar
 
@@ -65,39 +64,31 @@ class GlossaryFragment : Fragment() {
 
     private fun setupRecyclerView() {
         // Создаем адаптер с пустой функцией обработки нажатий
-        adapter = GlossaryAdapter { /* будет установлено позже через setOnItemClickListener */ }
+        adapter = GlossaryAdapter { term ->
+            viewModel.loadTerm(term.id)
+            // Переход к экрану деталей термина
+            findNavController().navigate(R.id.action_glossaryFragment_to_glossaryDetailFragment)
+        }
 
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@GlossaryFragment.adapter
         }
 
-        // Устанавливаем обработчик нажатий через setOnItemClickListener
-        adapter.setOnItemClickListener { term ->
-            // Получаем MainActivity и используем его NavController для навигации
-            (requireActivity() as? MainActivity)?.let { mainActivity ->
-                Timber.d("Navigating to term detail: ${term.id}")
-                
-                // Показываем детальный контент и используем прямую навигацию по ID
-                mainActivity.navController.navigate(
-                    R.id.glossaryDetailFragment,  // используем ID фрагмента вместо action
-                    Bundle().apply {
-                        putString("termId", term.id)
-                    }
-                )
-            }
+        // Настройка SwipeRefreshLayout
+        binding.swipeRefresh.setOnRefreshListener {
+            viewModel.loadTerms()
         }
     }
 
     private fun setupSearchView() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                query?.let { viewModel.setSearchQuery(it) }
-                return true
+                return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                newText?.let { viewModel.setSearchQuery(it) }
+                viewModel.setSearchQuery(newText ?: "")
                 return true
             }
         })
@@ -117,7 +108,7 @@ class GlossaryFragment : Fragment() {
                 viewModel.setCategory(category)
             } else {
                 // Если ни один чип не выбран, показываем все категории
-                viewModel.setCategory(GlossaryCategories.ALL)
+                viewModel.setCategory(GlossaryViewModel.ALL_CATEGORIES)
             }
         }
     }
@@ -130,15 +121,15 @@ class GlossaryFragment : Fragment() {
 
             // Добавляем чип "Все" в начало
             val allChip = Chip(requireContext()).apply {
-                text = GlossaryCategories.ALL
+                text = GlossaryViewModel.ALL_CATEGORIES
                 isCheckable = true
-                isChecked = viewModel.selectedCategory.value == GlossaryCategories.ALL
+                isChecked = viewModel.selectedCategory.value == GlossaryViewModel.ALL_CATEGORIES
             }
             binding.chipGroupCategories.addView(allChip)
 
             // Добавляем остальные категории
             categories.forEach { category ->
-                if (category != GlossaryCategories.ALL) {
+                if (category != GlossaryViewModel.ALL_CATEGORIES) {
                     val chip = Chip(requireContext()).apply {
                         text = category
                         isCheckable = true
@@ -152,31 +143,19 @@ class GlossaryFragment : Fragment() {
         // Наблюдаем за списком терминов
         viewModel.terms.observe(viewLifecycleOwner) { terms ->
             adapter.submitList(terms)
-            binding.emptyLayout.root.isVisible = terms.isEmpty() && !viewModel.loading.value!!
+            binding.emptyView.isVisible = terms.isEmpty()
         }
 
         // Наблюдаем за состоянием загрузки
         viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.isVisible = isLoading
-            if (!isLoading) {
-                binding.emptyLayout.root.isVisible = viewModel.terms.value?.isEmpty() == true
-            }
+            binding.swipeRefresh.isRefreshing = isLoading
+            binding.progressBar.isVisible = isLoading && adapter.itemCount == 0
         }
 
         // Наблюдаем за ошибками
         viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
-            if (errorMessage != null) {
-                binding.errorLayout.root.isVisible = true
-                binding.errorLayout.textErrorMessage.text = errorMessage
-                binding.recyclerView.isVisible = false
-                binding.emptyLayout.root.isVisible = false
-
-                binding.errorLayout.buttonRetry.setOnClickListener {
-                    viewModel.loadTerms()
-                }
-            } else {
-                binding.errorLayout.root.isVisible = false
-                binding.recyclerView.isVisible = true
+            errorMessage?.let {
+                binding.root.showErrorSnackbar(it)
             }
         }
     }

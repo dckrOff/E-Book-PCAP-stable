@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_rounded_card"
     android:layout_marginHorizontal="8dp"
     android:layout_marginTop="8dp"
+    android:background="@drawable/bg_rounded_card"
     android:paddingBottom="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/chapterContainer"
+        android:id="@+id/sectionContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
@@ -38,7 +38,7 @@
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/ivExpandIndicator"
+            app:layout_constraintEnd_toStartOf="@+id/ivReadStatus"
             app:layout_constraintStart_toEndOf="@+id/tvChapterNumber"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Введение в параллельные вычисления" />
@@ -56,11 +56,12 @@
             tools:text="Основные понятия и принципы параллельных вычислений" />
 
         <ImageView
-            android:id="@+id/ivExpandIndicator"
+            android:id="@+id/ivReadStatus"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:contentDescription="@string/expand"
-            android:src="@drawable/ic_arrow_down"
+            android:src="@drawable/ic_check"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/tvChapterTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tvChapterTitle" />
@@ -72,11 +73,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/chapterContainer"
-        tools:visibility="visible">
+        app:layout_constraintTop_toBottomOf="@+id/sectionContainer">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvSubchapters"
+            android:id="@+id/rv_sections"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"

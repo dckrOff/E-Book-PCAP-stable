@@ -205,7 +205,7 @@ class QuizSessionViewModel @Inject constructor(
         // Сохраняем результаты и ответы в одной корутине для синхронизации
         viewModelScope.launch {
             try {
-                // 1. Сначала сохраняем ответы пользователя
+                // Сначала сохраняем ответы пользователя
                 val answersSaved = quizRepository.saveUserAnswers(quiz.id, userAnswers)
                 if (answersSaved) {
                     Timber.d("Ответы пользователя сохранены успешно")

@@ -1,6 +1,8 @@
 package uz.dckroff.pcap.utils
 
 import android.view.View
+import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
 
 /**
  * Расширения для View
@@ -25,4 +27,24 @@ fun View.invisible() {
  */
 fun View.hide() {
     visibility = View.GONE
+}
+
+/**
+ * Показывает Snackbar с сообщением об ошибке
+ */
+fun View.showErrorSnackbar(message: String, actionText: String = "ОК", action: (() -> Unit)? = null) {
+    val snackbar = Snackbar.make(this, message, Snackbar.LENGTH_LONG)
+    
+    if (action != null) {
+        snackbar.setAction(actionText) { action() }
+    }
+    
+    snackbar.show()
+}
+
+/**
+ * Показывает Snackbar с сообщением об ошибке во фрагменте
+ */
+fun Fragment.showErrorSnackbar(message: String, actionText: String = "ОК", action: (() -> Unit)? = null) {
+    view?.showErrorSnackbar(message, actionText, action)
 } 
