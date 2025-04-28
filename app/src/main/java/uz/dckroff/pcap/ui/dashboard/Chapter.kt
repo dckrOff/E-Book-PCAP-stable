@@ -1,4 +1,4 @@
-package uz.dckroff.pcap.features.dashboard
+package uz.dckroff.pcap.ui.dashboard
 
 /**
  * Модель данных для главы/раздела учебника

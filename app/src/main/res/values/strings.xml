@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Учебник ПАКП</string>
+    <string name="app_name">Электронный учебник ПАКП</string>
     <string name="action_settings">Настройки</string>
 
     <!-- Общие строки -->
@@ -46,10 +46,12 @@
 
     <!-- Чтение -->
     <string name="next_section">Следующий раздел</string>
+    <string name="return_to_home">Вернуться на главный экран</string>
     <string name="previous_section">Предыдущий раздел</string>
     <string name="font_size">Размер шрифта</string>
     <string name="add_bookmark">Добавить закладку</string>
     <string name="add_note">Добавить заметку</string>
+    <string name="section_completed">Раздел завершен!</string>
 
     <!-- Тесты -->
     <string name="start_test">Начать тест</string>

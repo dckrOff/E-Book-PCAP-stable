@@ -1,4 +1,4 @@
-package uz.dckroff.pcap.ui.content
+package uz.dckroff.pcap.features.content
 
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -24,7 +25,7 @@ import uz.dckroff.pcap.utils.UiState
  * Фрагмент для отображения содержания учебника
  */
 @AndroidEntryPoint
-class ContentListFragment : DialogFragment() {
+class ContentListFragment : Fragment() {
 
     private var _binding: FragmentContentListBinding? = null
     private val binding get() = _binding!!
@@ -38,12 +39,6 @@ class ContentListFragment : DialogFragment() {
 
     private val chapterTitle: String? by lazy {
         arguments?.getString("chapterTitle")
-    }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.FullScreenDialogStyle)
     }
 
     override fun onCreateView(

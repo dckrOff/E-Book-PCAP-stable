@@ -88,7 +88,7 @@ class QuizSessionViewModel @Inject constructor(
                 val quiz = quizRepository.getQuizById(quizId)
                 
                 if (quiz != null) {
-                    _quiz.value = quiz
+                    _quiz.value = quiz!!
                     questions = quiz.questions
                     _totalQuestions.value = questions.size
                     _progress.value = 0

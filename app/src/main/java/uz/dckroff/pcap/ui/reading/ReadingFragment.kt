@@ -1,16 +1,16 @@
-package uz.dckroff.pcap.features.reading
+package uz.dckroff.pcap.ui.reading
 
 import android.graphics.Typeface
 import android.graphics.text.LineBreaker
 import android.os.Build
 import android.os.Bundle
-import android.text.Layout
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.ImageView
 import android.widget.TableLayout
 import android.widget.TableRow
@@ -59,6 +59,9 @@ class ReadingFragment : Fragment() {
     // В onCreateView или onViewCreated
     private lateinit var contentRenderer: ContentRenderer
 
+    // Сохраняем ссылку на слушатель для возможности его удаления
+    private var scrollListener: ViewTreeObserver.OnScrollChangedListener? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -83,6 +86,7 @@ class ReadingFragment : Fragment() {
         setupToolbar()
         setupObservers()
         setupButtons()
+        setupScrollListener()
 
         // Показываем прогресс перед загрузкой
         binding.progressBar.visibility = View.VISIBLE
@@ -135,6 +139,23 @@ class ReadingFragment : Fragment() {
         viewModel.allSections.observe(viewLifecycleOwner) { sections ->
             updateNextButtonVisibility()
         }
+
+        // Наблюдаем за сохраненной позицией прокрутки
+        viewModel.savedScrollPosition.observe(viewLifecycleOwner) { position ->
+            if (position > 0) {
+                binding.nestedScrollView.post {
+                    binding.nestedScrollView.scrollTo(0, position)
+                    Timber.d("Восстановлена позиция прокрутки: $position")
+                }
+            }
+        }
+
+        // Наблюдаем за прогрессом чтения
+        viewModel.readingProgress.observe(viewLifecycleOwner) { progress ->
+            // Обновляем индикатор прогресса
+            binding.progressIndicator.setProgress(progress, true)
+            Timber.d("Прогресс чтения обновлен: $progress%")
+        }
     }
 
     private fun setupButtons() {
@@ -156,66 +177,103 @@ class ReadingFragment : Fragment() {
     private fun updateNextButtonVisibility() {
         val nextSection = viewModel.getNextSection(currentSectionId)
 
-        // Проверяем, есть ли следующий раздел и отображаем кнопку соответственно
+        // Всегда показываем кнопку
+        binding.fabNextSection.visibility = View.VISIBLE
+        
+        // Если есть следующий раздел, кнопка ведет к нему, иначе - возврат на главный экран
         if (nextSection != null) {
-            binding.fabNextSection.visibility = View.VISIBLE
-            Timber.tag("PCAP_READING")
-                .d("Кнопка 'Далее' видима. Следующий раздел: ${nextSection.title}")
+            // Для следующего раздела используем стрелку вправо
+            binding.fabNextSection.setImageResource(R.drawable.ic_arrow_forward)
+            binding.fabNextSection.contentDescription = getString(R.string.next_section)
+            Timber.d("Кнопка 'Далее' - переход к разделу: ${nextSection.title}")
         } else {
-            binding.fabNextSection.visibility = View.GONE
-            Timber.tag("PCAP_READING")
-                .d("Кнопка 'Далее' скрыта. Следующий раздел отсутствует.")
+            // Для возврата на главный экран используем иконку домой
+            binding.fabNextSection.setImageResource(R.drawable.ic_home)
+            binding.fabNextSection.contentDescription = getString(R.string.return_to_home)
+            Timber.d("Кнопка 'Далее' - возврат на главный экран")
         }
-
-        // Выводим дополнительную информацию для отладки
-        Timber.tag("PCAP_READING")
-            .e(
-                "Обновлена видимость кнопки 'Далее'. Следующий раздел: ${nextSection?.title ?: "нет"}, " +
-                        "Видимость: ${if (binding.fabNextSection.visibility == View.VISIBLE) "VISIBLE" else "GONE"}"
-            )
     }
 
     /**
-     * Переход к следующему разделу
+     * Настройка слушателя прокрутки для отслеживания прогресса чтения
+     */
+    private fun setupScrollListener() {
+        scrollListener = ViewTreeObserver.OnScrollChangedListener {
+            if (_binding != null) { // Проверяем, что binding еще существует
+                val scrollView = binding.nestedScrollView
+                val scrollPosition = scrollView.scrollY
+
+                // Вычисляем прогресс прокрутки (0-100%)
+                val scrollRange = scrollView.getChildAt(0).height - scrollView.height
+                val scrollPercentage = if (scrollRange > 0) {
+                    (scrollPosition * 100) / scrollRange
+                } else {
+                    0
+                }
+
+                Timber.d("Прокрутка: позиция $scrollPosition, прогресс $scrollPercentage%")
+
+                // Сохраняем позицию прокрутки
+                chapterId?.let { chId ->
+                    viewModel.saveReadingPosition(chId, currentSectionId, scrollPosition)
+                }
+
+                // Если прокручено больше 75%, считаем раздел прочитанным
+                if (scrollPercentage > 75) {
+                    viewModel.updateReadingProgress(currentSectionId, 100)
+                } else {
+                    // Иначе устанавливаем прогресс равный проценту прокрутки
+                    viewModel.updateReadingProgress(currentSectionId, scrollPercentage)
+                }
+            }
+        }
+        
+        // Добавляем слушатель к ViewTreeObserver
+        binding.nestedScrollView.viewTreeObserver.addOnScrollChangedListener(scrollListener)
+    }
+
+    /**
+     * Переход к следующему разделу или возврат на главный экран
      */
     private fun navigateToNextSection() {
         val nextSection = viewModel.getNextSection(currentSectionId)
-        if (nextSection != null) {
-            // Отмечаем текущий раздел как прочитанный
-            viewModel.markSectionAsRead(currentSectionId)
-
-            // Переходим к следующему разделу
-            try {
-                Timber.tag("PCAP_READING")
-                    .e("Переход к следующему разделу в фрагменте: ${nextSection.id}")
-
-                // Сначала показываем прогресс
-                binding.progressBar.visibility = View.VISIBLE
-                binding.contentContainer.visibility = View.GONE
-
-                // Используем прямой переход по ID вместо действия
-                findNavController().navigate(
-                    R.id.readingFragment,
-                    Bundle().apply {
-                        putString("sectionId", nextSection.id)
-                        putString("chapterId", nextSection.chapterId ?: chapterId)
-                        putString("sectionTitle", nextSection.title)
-                    }
-                )
-            } catch (e: Exception) {
-                Timber.tag("PCAP_READING").e(e, "Ошибка при навигации к следующему разделу")
-                Toast.makeText(
-                    requireContext(),
-                    "Ошибка навигации: ${e.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
+        
+        // Отмечаем текущий раздел как прочитанный перед переходом к следующему
+        viewModel.markSectionAsRead(currentSectionId)
+        
+        // Добавляем небольшую задержку, чтобы база данных обновилась
+        binding.root.postDelayed({
+            if (nextSection != null) {
+                // Переходим к следующему разделу
+                try {
+                    Timber.d("Переход к следующему разделу: ${nextSection.id}")
+                    
+                    // Переход к следующему разделу в Navigation Component
+                    findNavController().navigate(
+                        R.id.actionReadingFragmentSelf,
+                        Bundle().apply {
+                            putString("chapterId", nextSection.chapterId)
+                            putString("sectionId", nextSection.id)
+                            putString("sectionTitle", nextSection.title)
+                        }
+                    )
+                } catch (e: Exception) {
+                    Timber.e(e, "Ошибка при переходе к следующему разделу")
+                }
+            } else {
+                // Возврат на главный экран (Dashboard)
+                Timber.d("Возврат на главный экран (Dashboard)")
+                try {
+                    // Явный переход на Dashboard вместо простого navigateUp()
+                    findNavController().navigate(R.id.dashboardFragment)
+                    Toast.makeText(requireContext(), getString(R.string.section_completed), Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    Timber.e(e, "Ошибка при возврате на главный экран")
+                    // Запасной вариант - просто вернуться назад
+                    findNavController().navigateUp()
+                }
             }
-        } else {
-            // Если это последний раздел, просто отмечаем его как прочитанный
-            viewModel.markSectionAsRead(currentSectionId)
-            Timber.tag("PCAP_READING").e("Достигнут последний раздел")
-            Toast.makeText(requireContext(), "Вы достигли конца главы", Toast.LENGTH_SHORT).show()
-        }
+        }, 300) // Небольшая задержка перед переходом
     }
 
     private fun addContentToScreen(sectionContent: List<SectionContent>) {
@@ -505,7 +563,29 @@ class ReadingFragment : Fragment() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        
+        // Сохраняем позицию чтения при уходе с экрана
+        if (_binding != null) {
+            val scrollPosition = binding.nestedScrollView.scrollY
+            chapterId?.let { chId ->
+                viewModel.saveReadingPosition(chId, currentSectionId, scrollPosition)
+            }
+        }
+    }
+
     override fun onDestroyView() {
+        // Удаляем слушатель прокрутки перед уничтожением представления
+        try {
+            scrollListener?.let { listener ->
+                binding.nestedScrollView.viewTreeObserver.removeOnScrollChangedListener(listener)
+                scrollListener = null
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка при удалении слушателя прокрутки")
+        }
+        
         super.onDestroyView()
         _binding = null
     }

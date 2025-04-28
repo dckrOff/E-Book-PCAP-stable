@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isNotEmpty
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,8 +16,8 @@ import timber.log.Timber
 import uz.dckroff.pcap.MainActivity
 import uz.dckroff.pcap.R
 import uz.dckroff.pcap.databinding.FragmentDashboardBinding
-import uz.dckroff.pcap.ui.content.ContentListFragment
-import uz.dckroff.pcap.ui.content.ContentListViewModel
+import uz.dckroff.pcap.features.content.ContentListFragment
+import uz.dckroff.pcap.features.content.ContentListViewModel
 
 @AndroidEntryPoint
 class DashboardFragment : Fragment() {
@@ -49,6 +50,14 @@ class DashboardFragment : Fragment() {
         setupAdapters()
         setupUI()
         observeViewModel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Обновляем данные при возвращении на главный экран
+        viewModel.refreshOnReturn()
+        Timber.d("DashboardFragment: onResume, обновление данных")
     }
 
     private fun setupAdapters() {
@@ -99,12 +108,21 @@ class DashboardFragment : Fragment() {
         viewModel.overallProgress.observe(viewLifecycleOwner) { progress ->
             binding.progressBar.progress = progress
             binding.tvProgressPercent.text = "$progress%"
+
+            // Убедимся, что индикатор прогресса всегда видим
+            binding.progressBar.visibility = View.VISIBLE
+        }
+
+        // Наблюдение за статистикой прогресса (пройдено/всего разделов)
+        viewModel.progressStats.observe(viewLifecycleOwner) { stats ->
+            val (completed, total) = stats
+            binding.tvCompletedSections.text = "Пройдено $completed из $total разделов"
         }
 
         // Наблюдение за недавно просмотренными главами
         viewModel.recentChapters.observe(viewLifecycleOwner) { chapters ->
             Timber.d("Получены недавние главы: ${chapters.size}")
-            chapters.forEach { Timber.d("Глава: ${it.id} - ${it.title}") }
+            chapters.forEach { Timber.d("Глава: ${it.id} - ${it.title}, прогресс: ${it.progress}%") }
             recentAdapter.submitList(chapters)
 
             // Показываем или скрываем секцию в зависимости от наличия данных
@@ -123,6 +141,7 @@ class DashboardFragment : Fragment() {
             allChaptersAdapter.submitList(chapters)
 
             // Показываем или скрываем секцию в зависимости от наличия данных
+            Timber.d("chapters.isNullOrEmpty: ${chapters.isNullOrEmpty()}")
             if (chapters.isNullOrEmpty()) {
                 binding.tvAllTitle.visibility = View.GONE
                 binding.rvAllChapters.visibility = View.GONE
@@ -158,10 +177,10 @@ class DashboardFragment : Fragment() {
         // Наблюдение за статусом загрузки
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             Timber.d("Статус загрузки: {$isLoading}")
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+//            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
 
             // Скрываем контент при загрузке
-            if (isLoading) {
+            if (isLoading && binding.rvAllChapters.adapter!!.itemCount < 1) {
                 binding.tvAllTitle.visibility = View.GONE
                 binding.rvAllChapters.visibility = View.GONE
 
@@ -182,34 +201,6 @@ class DashboardFragment : Fragment() {
                 Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
                 viewModel.clearError()
             }
-        }
-    }
-
-    /**
-     * Навигация к экрану содержания главы
-     */
-    private fun navigateToReading(chapter: Chapter) {
-        try {
-            // Создаем и показываем GlossaryDetailFragment как диалог
-            val contentListFragment = ContentListFragment.newInstance()
-            contentListFragment.show(parentFragmentManager, "content_list_fragment")
-
-//            val action = DashboardFragmentDirections.actionDashboardFragmentToContentListFragment()
-//            findNavController().navigate(action)
-
-            // Передаем идентификатор главы в ViewModel для фильтрации содержимого
-            val contentListViewModel = androidx.lifecycle.ViewModelProvider(requireActivity())
-                .get(ContentListViewModel::class.java)
-//            contentListViewModel.filterContentByChapter(chapter.id)
-
-            Timber.d("Navigating to content list screen for chapter: ${chapter.title}")
-        } catch (e: Exception) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.navigation_error) + e.message,
-                Toast.LENGTH_SHORT
-            ).show()
-            Timber.e(e, "Error navigating to content list fragment")
         }
     }
 

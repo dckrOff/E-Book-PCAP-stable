@@ -32,6 +32,14 @@ class ReadingViewModel @Inject constructor(
     private val _sectionContent = MutableLiveData<List<uz.dckroff.pcap.data.model.SectionContent>>()
     val sectionContent: LiveData<List<uz.dckroff.pcap.data.model.SectionContent>> = _sectionContent
 
+    // Прогресс чтения текущего раздела (0-100%)
+    private val _readingProgress = MutableLiveData<Int>()
+    val readingProgress: LiveData<Int> = _readingProgress
+
+    // Позиция скролла для восстановления
+    private val _savedScrollPosition = MutableLiveData<Int>()
+    val savedScrollPosition: LiveData<Int> = _savedScrollPosition
+
     // Инициализация без загрузки разделов, так как chapterId еще не доступен
     init {
         Timber.tag("PCAP_READING").d("Инициализация ReadingViewModel")
@@ -45,6 +53,10 @@ class ReadingViewModel @Inject constructor(
             try {
                 val sections = contentRepository.getSectionsForChapter(chapterId).first()
                 _allSections.postValue(sections)
+
+                // Обновляем общее количество разделов в репозитории прогресса
+                userProgressRepository.updateTotalSections(sections.size)
+
                 Timber.tag("PCAP_READING")
                     .d("Загружено ${sections.size} разделов для главы $chapterId")
             } catch (e: Exception) {
@@ -90,11 +102,50 @@ class ReadingViewModel @Inject constructor(
                 Timber.tag("PCAP_READING")
                     .d("Загружен раздел: ${section.title} с ${content.size} элементами контента")
 
-                // Обновляем прогресс чтения
-//                userProgressRepository.updateReadingProgress(sectionId, 50) // 50% при открытии
+                // Восстанавливаем позицию скролла
+                restoreReadingPosition(chapterId)
 
+                // Обновляем прогресс чтения - 30% при открытии
+                updateReadingProgress(sectionId, 30)
             } catch (e: Exception) {
                 Timber.tag("PCAP_READING").e(e, "Ошибка при загрузке раздела $sectionId")
+            }
+        }
+    }
+
+    /**
+     * Обновляет прогресс чтения раздела
+     */
+    fun updateReadingProgress(sectionId: String, progress: Int) {
+        _readingProgress.value = progress
+
+        // Обновляем прогресс в репозитории
+        viewModelScope.launch {
+            userProgressRepository.updateSectionProgress(sectionId, progress)
+        }
+    }
+
+    /**
+     * Сохраняет текущую позицию чтения
+     */
+    fun saveReadingPosition(chapterId: String, sectionId: String, scrollPosition: Int) {
+        viewModelScope.launch {
+            userProgressRepository.saveReadingPosition(chapterId, sectionId, scrollPosition)
+            Timber.d("Сохранена позиция чтения для раздела $sectionId: $scrollPosition")
+        }
+    }
+
+    /**
+     * Восстанавливает последнюю позицию чтения
+     */
+    private fun restoreReadingPosition(chapterId: String) {
+        viewModelScope.launch {
+            try {
+                val position = userProgressRepository.getLastReadPosition(chapterId)
+                _savedScrollPosition.postValue(position)
+                Timber.d("Восстановлена позиция скролла: $position")
+            } catch (e: Exception) {
+                Timber.e(e, "Ошибка при восстановлении позиции чтения")
             }
         }
     }
@@ -156,13 +207,20 @@ class ReadingViewModel @Inject constructor(
     fun markSectionAsRead(sectionId: String) {
         viewModelScope.launch {
             try {
-                userProgressRepository.updateChapterProgress(sectionId, 100)
-                Timber.d("Раздел $sectionId отмечен как прочитанный")
-
-                // Обновляем родительскую главу
-                updateChapterProgress(sectionId)
+                // Получаем текущий раздел
+                val currentSection = _currentSection.value
+                if (currentSection != null) {
+                    // Сначала установим прогресс на 100% в UI
+                    _readingProgress.postValue(100)
+                    
+                    // Используем метод для отметки раздела как прочитанного
+                    userProgressRepository.markSectionAsRead(sectionId, currentSection.chapterId)
+                    Timber.d("Раздел $sectionId отмечен как прочитанный")
+                } else {
+                    Timber.e("Невозможно отметить раздел как прочитанный: текущий раздел не определен")
+                }
             } catch (e: Exception) {
-                Timber.e(e, "Ошибка при обновлении прогресса для раздела $sectionId")
+                Timber.e(e, "Ошибка при отметке раздела как прочитанного: $sectionId")
             }
         }
     }
@@ -171,23 +229,14 @@ class ReadingViewModel @Inject constructor(
      * Обновить прогресс главы на основе прогресса её разделов
      */
     private suspend fun updateChapterProgress(sectionId: String) {
-//        try {
-//            val section = _allSections.value?.find { it.id == sectionId } ?: return
-//            val chapterId = section.chapterId
-//
-//            // Получаем все разделы главы
-//            val chaptersWithSections = contentRepository.getDummyContentStructure()
-//            val chapter = chaptersWithSections.find { it.id == chapterId } ?: return
-//            val sectionsOfChapter = chapter.sections
-//
-//            // Вычисляем общий прогресс главы как средний прогресс всех её разделов
-//            val totalProgress = sectionsOfChapter.sumOf { it.progress } / sectionsOfChapter.size
-//
-//            // Обновляем прогресс главы
-//            userProgressRepository.updateChapterProgress(chapterId, totalProgress)
-//            Timber.d("Обновлен прогресс главы $chapterId: $totalProgress%")
-//        } catch (e: Exception) {
-//            Timber.e(e, "Ошибка при обновлении прогресса главы для раздела $sectionId")
-//        }
+        try {
+            val section = _allSections.value?.find { it.id == sectionId }
+            if (section != null) {
+                // Текущая реализация оставлена пустой, так как в предыдущем коде функционал был закомментирован
+                // TODO: Реализация будет добавлена после уточнения структуры данных и бизнес-логики
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка при обновлении прогресса главы для раздела $sectionId")
+        }
     }
 } 

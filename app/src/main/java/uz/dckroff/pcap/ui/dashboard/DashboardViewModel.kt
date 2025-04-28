@@ -28,6 +28,10 @@ class DashboardViewModel @Inject constructor(
     private val _overallProgress = MutableLiveData<Int>()
     val overallProgress: LiveData<Int> = _overallProgress
 
+    // Статистика прогресса: пройдено/всего разделов
+    private val _progressStats = MutableLiveData<Pair<Int, Int>>()
+    val progressStats: LiveData<Pair<Int, Int>> = _progressStats
+
     // Недавно просмотренные главы
     private val _recentChapters = MutableLiveData<List<Chapter>>()
     val recentChapters: LiveData<List<Chapter>> = _recentChapters
@@ -64,15 +68,23 @@ class DashboardViewModel @Inject constructor(
                 _isLoading.value = true
 
                 coroutineScope {
+                    // Загружаем общий прогресс обучения
                     val overallProgressDeferred = async {
                         userProgressRepository.getOverallProgress()
                             .catch { e ->
                                 Timber.e(e, "Error loading overall progress")
                                 _error.value = e.message
                             }
-                            .firstOrNull() // сразу берём первое значение
+                            .firstOrNull()
                     }
 
+                    // Загружаем статистику по завершенным разделам
+                    val progressStatsDeferred = async {
+                        val userProgress = userProgressRepository.getUserProgress().first()
+                        Pair(userProgress?.completedSections ?: 0, userProgress?.totalSections ?: 0)
+                    }
+
+                    // Загружаем недавно просмотренные главы
                     val recentChaptersDeferred = async {
                         contentRepository.getRecentChapters()
                             .catch { e ->
@@ -82,6 +94,7 @@ class DashboardViewModel @Inject constructor(
                             .firstOrNull()
                     }
 
+                    // Загружаем все главы
                     val allChaptersDeferred = async {
                         contentRepository.getChapters()
                             .catch { e ->
@@ -93,12 +106,17 @@ class DashboardViewModel @Inject constructor(
 
                     // Ждём все результаты
                     _overallProgress.value = overallProgressDeferred.await() ?: 0
-                    Timber.d("Получение прогресса: ${_overallProgress.value}")
+                    _progressStats.value = progressStatsDeferred.await()
+                    Timber.d("Получение прогресса: ${_overallProgress.value}%, пройдено ${_progressStats.value?.first ?: 0} из ${_progressStats.value?.second ?: 0} разделов")
 
-                    _recentChapters.value = recentChaptersDeferred.await() ?: emptyList()
+                    // Обрабатываем результаты загрузки глав
+                    val recentChapters = recentChaptersDeferred.await() ?: emptyList()
+                    val allChapters = allChaptersDeferred.await() ?: emptyList()
+
+                    // Обновляем данные с учетом прогресса чтения для каждой главы
+                    updateChaptersWithReadingProgress(recentChapters, allChapters)
+
                     Timber.d("Загружены последние главы: ${_recentChapters.value?.size} шт.")
-
-                    _allChapters.value = allChaptersDeferred.await() ?: emptyList()
                     Timber.d("Загружено всех глав: ${_allChapters.value?.size} шт.")
                 }
 
@@ -111,6 +129,34 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Обновляем данные глав с учетом прогресса чтения
+     */
+    private suspend fun updateChaptersWithReadingProgress(
+        recentChapters: List<Chapter>,
+        allChapters: List<Chapter>
+    ) {
+        try {
+            // Получаем прогресс чтения для каждой главы
+            val updatedRecentChapters = recentChapters.map { chapter ->
+                val progress = userProgressRepository.getChapterProgress(chapter.id)
+                Timber.d("Получен прогресс для главы ${chapter.id}: $progress%")
+                chapter.copy(progress = progress)
+            }
+
+            val updatedAllChapters = allChapters.map { chapter ->
+                val progress = userProgressRepository.getChapterProgress(chapter.id)
+                Timber.d("Получен прогресс для главы ${chapter.id}: $progress%")
+                chapter.copy(progress = progress)
+            }
+
+            // Обновляем LiveData
+            _recentChapters.value = updatedRecentChapters
+            _allChapters.value = updatedAllChapters
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка при обновлении прогресса чтения глав")
+        }
+    }
 
     /**
      * Обработка нажатия на кнопку "Продолжить обучение"
@@ -197,5 +243,14 @@ class DashboardViewModel @Inject constructor(
                 Timber.e(e, "Error refreshing data from Firebase")
             }
         }
+    }
+
+    /**
+     * Обновить данные при возвращении с экрана чтения
+     * Этот метод должен вызываться в onResume фрагмента
+     */
+    fun refreshOnReturn() {
+        Timber.d("Обновление данных после возвращения с экрана чтения")
+        loadDashboardData()
     }
 } 

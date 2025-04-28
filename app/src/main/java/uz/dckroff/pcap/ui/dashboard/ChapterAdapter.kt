@@ -1,4 +1,4 @@
-package uz.dckroff.pcap.features.dashboard
+package uz.dckroff.pcap.ui.dashboard
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
