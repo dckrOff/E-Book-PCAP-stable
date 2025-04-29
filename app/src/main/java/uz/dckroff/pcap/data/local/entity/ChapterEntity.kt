@@ -14,5 +14,8 @@ data class ChapterEntity(
     val description: String,
     var isExpanded: Boolean = false,
     val sections: List<Section> = emptyList(),
-    val progress: Int = 0
+    val progress: Int = 0,
+    val lastReadSectionId: String = "",
+    val lastReadPosition: Int = 0,
+    val lastReadTimestamp: Long = 0
 )

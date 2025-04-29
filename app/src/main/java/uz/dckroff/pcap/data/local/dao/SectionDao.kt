@@ -36,4 +36,10 @@ interface SectionDao {
     
     @Query("SELECT COUNT(*) FROM sections WHERE chapterId = :chapterId")
     suspend fun getTotalSectionsCount(chapterId: String): Int
+    
+    @Query("SELECT COUNT(*) FROM sections WHERE hasSectionRead = 1")
+    suspend fun getTotalReadSectionsCount(): Int
+    
+    @Query("SELECT COUNT(*) FROM sections")
+    suspend fun getTotalAllSectionsCount(): Int
 } 

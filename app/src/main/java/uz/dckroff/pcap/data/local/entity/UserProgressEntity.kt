@@ -11,5 +11,7 @@ data class UserProgressEntity(
     @PrimaryKey
     val id: String = "user_progress",
     val overallProgress: Int,
-    val lastUpdated: Long = System.currentTimeMillis()
+    val lastUpdated: Long = System.currentTimeMillis(),
+    val completedSections: Int = 0,
+    val totalSections: Int = 0
 ) 

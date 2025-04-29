@@ -1,4 +1,4 @@
-package uz.dckroff.pcap.features.content
+package uz.dckroff.pcap.ui.content
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-package uz.dckroff.pcap.features.quiz
+package uz.dckroff.pcap.ui.quiz
 
 import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import uz.dckroff.pcap.data.model.*
 import uz.dckroff.pcap.data.repository.QuizRepository
-import java.util.*
 import javax.inject.Inject
 
 /**

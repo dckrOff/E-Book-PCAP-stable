@@ -1,4 +1,4 @@
-package uz.dckroff.pcap.features.content
+package uz.dckroff.pcap.ui.content
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import uz.dckroff.pcap.data.model.ContentItem
 import uz.dckroff.pcap.databinding.ItemChapterBinding
-import uz.dckroff.pcap.databinding.ItemSubchapterBinding
 
 /**
  * Адаптер для отображения списка разделов

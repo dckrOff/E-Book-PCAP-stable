@@ -1,6 +1,5 @@
-package uz.dckroff.pcap.features.reading
+package uz.dckroff.pcap.ui.reading
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

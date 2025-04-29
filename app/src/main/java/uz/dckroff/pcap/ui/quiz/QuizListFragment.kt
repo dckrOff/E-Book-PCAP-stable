@@ -1,4 +1,4 @@
-package uz.dckroff.pcap.features.quiz
+package uz.dckroff.pcap.ui.quiz
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.chip.Chip
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import uz.dckroff.pcap.R

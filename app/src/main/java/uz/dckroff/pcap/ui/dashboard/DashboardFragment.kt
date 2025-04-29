@@ -1,12 +1,10 @@
-package uz.dckroff.pcap.features.dashboard
+package uz.dckroff.pcap.ui.dashboard
 
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.view.isNotEmpty
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,8 +14,6 @@ import timber.log.Timber
 import uz.dckroff.pcap.MainActivity
 import uz.dckroff.pcap.R
 import uz.dckroff.pcap.databinding.FragmentDashboardBinding
-import uz.dckroff.pcap.features.content.ContentListFragment
-import uz.dckroff.pcap.features.content.ContentListViewModel
 
 @AndroidEntryPoint
 class DashboardFragment : Fragment() {

@@ -54,4 +54,10 @@ interface ChapterDao {
 
     @Query("SELECT * FROM chapters WHERE progress < 50 ORDER BY progress LIMIT :limit")
     fun getRecommendedChapters(limit: Int): Flow<List<ChapterEntity>>
+
+    @Query("SELECT COUNT(*) FROM chapters")
+    suspend fun getTotalChaptersCount(): Int
+
+    @Query("SELECT COUNT(*) FROM chapters WHERE progress >= 100")
+    suspend fun getCompletedChaptersCount(): Int
 } 

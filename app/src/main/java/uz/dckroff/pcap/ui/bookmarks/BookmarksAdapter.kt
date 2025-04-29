@@ -1,4 +1,4 @@
-package uz.dckroff.pcap.features.bookmarks
+package uz.dckroff.pcap.ui.bookmarks
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

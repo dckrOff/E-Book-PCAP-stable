@@ -1,4 +1,4 @@
-package uz.dckroff.pcap.features.settings
+package uz.dckroff.pcap.ui.settings
 
 import android.os.Bundle
 import android.view.LayoutInflater

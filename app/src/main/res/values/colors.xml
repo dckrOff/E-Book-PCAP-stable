@@ -41,4 +41,5 @@
 
     <color name="material_on_surface_emphasis_medium">#99000000</color>
     <color name="material_on_surface_emphasis_high_type">#DD000000</color>
+    <color name="lightGray">#D7D7D7</color>
 </resources>

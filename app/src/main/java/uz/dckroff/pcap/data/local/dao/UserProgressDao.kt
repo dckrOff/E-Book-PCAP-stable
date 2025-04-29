@@ -24,4 +24,34 @@ interface UserProgressDao {
     
     @Query("SELECT AVG(progress) FROM chapters")
     suspend fun calculateOverallProgress(): Int?
+    
+    @Query("UPDATE chapters SET lastReadSectionId = :sectionId, lastReadPosition = :position, lastReadTimestamp = :timestamp WHERE id = :chapterId")
+    suspend fun updateReadingPosition(chapterId: String, sectionId: String, position: Int, timestamp: Long)
+    
+    @Query("SELECT lastReadSectionId FROM chapters WHERE id = :chapterId")
+    suspend fun getLastReadSectionId(chapterId: String): String?
+    
+    @Query("SELECT lastReadPosition FROM chapters WHERE id = :chapterId")
+    suspend fun getLastReadPosition(chapterId: String): Int?
+    
+    @Query("UPDATE user_progress SET completedSections = completedSections + 1")
+    suspend fun incrementCompletedSections()
+    
+    @Query("UPDATE user_progress SET completedSections = :count")
+    suspend fun updateCompletedSections(count: Int)
+    
+    @Query("UPDATE user_progress SET totalSections = :count")
+    suspend fun updateTotalSections(count: Int)
+    
+    /**
+     * Обновить статус прочтения раздела
+     */
+    @Query("UPDATE sections SET hasSectionRead = :isRead WHERE id = :sectionId")
+    suspend fun updateSectionReadStatus(sectionId: String, isRead: Boolean)
+    
+    /**
+     * Получить статус прочтения раздела
+     */
+    @Query("SELECT hasSectionRead FROM sections WHERE id = :sectionId")
+    suspend fun getSectionReadStatus(sectionId: String): Boolean?
 } 

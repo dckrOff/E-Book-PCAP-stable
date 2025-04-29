@@ -1,23 +1,21 @@
 package uz.dckroff.pcap.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import uz.dckroff.pcap.data.local.dao.ChapterDao
+import uz.dckroff.pcap.data.local.dao.SectionDao
 import uz.dckroff.pcap.data.local.entity.ChapterEntity
 import uz.dckroff.pcap.data.local.entity.RecentChapterEntity
+import uz.dckroff.pcap.data.local.entity.SectionEntity
 import uz.dckroff.pcap.data.model.ContentItem
 import uz.dckroff.pcap.data.model.SectionContent
-import uz.dckroff.pcap.features.dashboard.Chapter
+import uz.dckroff.pcap.ui.dashboard.Chapter
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 
@@ -27,7 +25,8 @@ import kotlinx.coroutines.flow.first
 @Singleton
 class ContentRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val chapterDao: ChapterDao
+    private val chapterDao: ChapterDao,
+    private val sectionDao: SectionDao
 ) {
     /**
      * Получить все главы/разделы учебника
@@ -150,6 +149,9 @@ class ContentRepository @Inject constructor(
                 contentUrl = sectionDoc.getString("contentUrl")
             )
         }
+        
+        // Сохраняем полученные разделы в базу данных
+        saveSectionsToDatabase(sections)
 
         emit(sections)
     }.catch { e ->
@@ -260,6 +262,35 @@ class ContentRepository @Inject constructor(
         } catch (e: Exception) {
             Timber.e(e, "Error in refreshChaptersFromFirestore")
             throw e
+        }
+    }
+
+    /**
+     * Конвертировать модель раздела в сущность для базы данных
+     */
+    private fun mapToSectionEntity(section: ContentItem.Section): SectionEntity {
+        return SectionEntity(
+            id = section.id,
+            chapterId = section.chapterId,
+            title = section.title,
+            description = section.description,
+            order = section.order,
+            number = section.number,
+            contentUrl = section.contentUrl,
+            hasSectionRead = false
+        )
+    }
+    
+    /**
+     * Сохранить список разделов в базу данных
+     */
+    suspend fun saveSectionsToDatabase(sections: List<ContentItem.Section>) {
+        try {
+            val sectionEntities = sections.map { mapToSectionEntity(it) }
+            sectionDao.insertSections(sectionEntities)
+            Timber.d("Сохранено ${sectionEntities.size} разделов в базу данных")
+        } catch (e: Exception) {
+            Timber.e(e, "Ошибка при сохранении разделов в базу данных")
         }
     }
 } 

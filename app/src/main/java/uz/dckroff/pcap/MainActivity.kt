@@ -3,18 +3,16 @@ package uz.dckroff.pcap
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import uz.dckroff.pcap.databinding.ActivityMainBinding
-import uz.dckroff.pcap.features.bookmarks.BookmarksFragment
-import uz.dckroff.pcap.features.dashboard.DashboardFragment
-import uz.dckroff.pcap.features.glossary.GlossaryFragment
-import uz.dckroff.pcap.features.quiz.QuizListFragment
-import uz.dckroff.pcap.ui.ViewPagerAdapter
+import uz.dckroff.pcap.ui.bookmarks.BookmarksFragment
+import uz.dckroff.pcap.ui.dashboard.DashboardFragment
+import uz.dckroff.pcap.ui.glossary.GlossaryFragment
+import uz.dckroff.pcap.ui.quiz.QuizListFragment
 
 /**
  * Главная активность приложения, содержащая ViewPager2 для переключения между основными разделами

@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import uz.dckroff.pcap.data.local.AppDatabase
 import uz.dckroff.pcap.data.local.dao.ChapterDao
+import uz.dckroff.pcap.data.local.dao.SectionDao
 import uz.dckroff.pcap.data.local.dao.UserProgressDao
 import javax.inject.Singleton
 
@@ -34,5 +35,11 @@ object DatabaseModule {
     @Singleton
     fun provideUserProgressDao(appDatabase: AppDatabase): UserProgressDao {
         return appDatabase.userProgressDao()
+    }
+    
+    @Provides
+    @Singleton
+    fun provideSectionDao(appDatabase: AppDatabase): SectionDao {
+        return appDatabase.sectionDao()
     }
 } 

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_glossary"
-        android:name="uz.dckroff.pcap.features.glossary.GlossaryFragment"
+        android:name="uz.dckroff.pcap.ui.glossary.GlossaryFragment"
         android:label="@string/glossary"
         tools:layout="@layout/fragment_glossary">
         <action
@@ -21,7 +21,7 @@
 
     <fragment
         android:id="@+id/navigation_glossary_detail"
-        android:name="uz.dckroff.pcap.features.glossary.GlossaryDetailFragment"
+        android:name="uz.dckroff.pcap.ui.glossary.GlossaryDetailFragment"
         android:label="@string/glossary_detail"
         tools:layout="@layout/fragment_glossary_detail">
         <argument

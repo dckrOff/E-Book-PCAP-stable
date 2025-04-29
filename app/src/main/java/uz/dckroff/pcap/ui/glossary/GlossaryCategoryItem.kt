@@ -1,4 +1,4 @@
-package uz.dckroff.pcap.features.glossary
+package uz.dckroff.pcap.ui.glossary
 
 /**
  * Модель категории глоссария для отображения в списке

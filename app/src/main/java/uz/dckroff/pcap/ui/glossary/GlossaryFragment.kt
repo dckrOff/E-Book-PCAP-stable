@@ -1,4 +1,4 @@
-package uz.dckroff.pcap.features.glossary
+package uz.dckroff.pcap.ui.glossary
 
 import android.os.Bundle
 import android.util.Log
@@ -10,14 +10,11 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
-import uz.dckroff.pcap.MainActivity
 import uz.dckroff.pcap.R
 import uz.dckroff.pcap.databinding.FragmentGlossaryBinding
 import uz.dckroff.pcap.utils.showErrorSnackbar

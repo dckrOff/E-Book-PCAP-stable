@@ -1,4 +1,4 @@
-package uz.dckroff.pcap.features.quiz
+package uz.dckroff.pcap.ui.quiz
 
 import android.os.Bundle
 import android.view.LayoutInflater

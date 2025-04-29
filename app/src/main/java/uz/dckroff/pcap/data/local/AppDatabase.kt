@@ -6,9 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import uz.dckroff.pcap.data.local.dao.ChapterDao
+import uz.dckroff.pcap.data.local.dao.SectionDao
 import uz.dckroff.pcap.data.local.dao.UserProgressDao
 import uz.dckroff.pcap.data.local.entity.ChapterEntity
 import uz.dckroff.pcap.data.local.entity.RecentChapterEntity
+import uz.dckroff.pcap.data.local.entity.SectionEntity
 import uz.dckroff.pcap.data.local.entity.UserProgressEntity
 import uz.dckroff.pcap.data.local.util.Converters
 
@@ -19,9 +21,10 @@ import uz.dckroff.pcap.data.local.util.Converters
     entities = [
         ChapterEntity::class,
         UserProgressEntity::class,
-        RecentChapterEntity::class
+        RecentChapterEntity::class,
+        SectionEntity::class
     ],
-    version = 2,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -29,6 +32,7 @@ abstract class AppDatabase : RoomDatabase() {
     
     abstract fun chapterDao(): ChapterDao
     abstract fun userProgressDao(): UserProgressDao
+    abstract fun sectionDao(): SectionDao
     
     companion object {
         private const val DATABASE_NAME = "pcap_database"

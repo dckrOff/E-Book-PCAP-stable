@@ -1,4 +1,4 @@
-package uz.dckroff.pcap.ui
+package uz.dckroff.pcap
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity

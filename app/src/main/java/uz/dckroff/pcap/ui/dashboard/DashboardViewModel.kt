@@ -1,4 +1,4 @@
-package uz.dckroff.pcap.features.dashboard
+package uz.dckroff.pcap.ui.dashboard
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -9,7 +9,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch

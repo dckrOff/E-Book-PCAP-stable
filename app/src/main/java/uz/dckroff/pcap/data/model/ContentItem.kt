@@ -29,6 +29,7 @@ sealed class ContentItem {
         val order: Int,
         val number: Int,
         val progress: Int = 0,
-        val contentUrl: String? = null
+        val contentUrl: String? = null,
+        val hasSectionRead: Boolean = false
     ) : ContentItem()
 } 

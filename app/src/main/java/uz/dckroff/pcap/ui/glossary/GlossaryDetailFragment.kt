@@ -1,11 +1,10 @@
-package uz.dckroff.pcap.features.glossary
+package uz.dckroff.pcap.ui.glossary
 
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,12 +12,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.chip.Chip
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 import uz.dckroff.pcap.MainActivity
 import uz.dckroff.pcap.R
 import uz.dckroff.pcap.databinding.FragmentGlossaryDetailBinding
 import uz.dckroff.pcap.utils.Resource
-import uz.dckroff.pcap.utils.showErrorSnackbar
 
 /**
  * Фрагмент для отображения детальной информации о термине из глоссария

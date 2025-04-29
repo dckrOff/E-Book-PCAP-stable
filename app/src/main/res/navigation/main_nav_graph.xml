@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/dashboardFragment"
-        android:name="uz.dckroff.pcap.features.dashboard.DashboardFragment"
+        android:name="uz.dckroff.pcap.ui.dashboard.DashboardFragment"
         android:label="@string/dashboard"
         tools:layout="@layout/fragment_dashboard">
         
@@ -45,7 +45,7 @@
 
     <fragment
         android:id="@+id/bookmarksFragment"
-        android:name="uz.dckroff.pcap.features.bookmarks.BookmarksFragment"
+        android:name="uz.dckroff.pcap.ui.bookmarks.BookmarksFragment"
         android:label="@string/bookmarks"
         tools:layout="@layout/fragment_bookmarks">
         
@@ -60,7 +60,7 @@
 
     <fragment
         android:id="@+id/glossaryFragment"
-        android:name="uz.dckroff.pcap.features.glossary.GlossaryFragment"
+        android:name="uz.dckroff.pcap.ui.glossary.GlossaryFragment"
         android:label="@string/glossary"
         tools:layout="@layout/fragment_glossary">
         
@@ -75,7 +75,7 @@
 
     <fragment
         android:id="@+id/glossaryDetailFragment"
-        android:name="uz.dckroff.pcap.features.glossary.GlossaryDetailFragment"
+        android:name="uz.dckroff.pcap.ui.glossary.GlossaryDetailFragment"
         android:label="@string/glossary_detail"
         tools:layout="@layout/fragment_glossary_detail">
         
@@ -102,7 +102,7 @@
 
     <fragment
         android:id="@+id/quizListFragment"
-        android:name="uz.dckroff.pcap.features.quiz.QuizListFragment"
+        android:name="uz.dckroff.pcap.ui.quiz.QuizListFragment"
         android:label="@string/tests"
         tools:layout="@layout/fragment_quiz_list">
 
@@ -127,7 +127,7 @@
 
     <fragment
         android:id="@+id/readingFragment"
-        android:name="uz.dckroff.pcap.features.reading.ReadingFragment"
+        android:name="uz.dckroff.pcap.ui.reading.ReadingFragment"
         android:label="@string/reading"
         tools:layout="@layout/fragment_reading">
         <argument
@@ -148,7 +148,7 @@
     <!-- Заглушки для будущих фрагментов -->
     <fragment
         android:id="@+id/quizSessionFragment"
-        android:name="uz.dckroff.pcap.features.quiz.QuizSessionFragment"
+        android:name="uz.dckroff.pcap.ui.quiz.QuizSessionFragment"
         android:label="@string/quiz"
         tools:layout="@layout/fragment_quiz_session">
         <argument
@@ -167,7 +167,7 @@
 
     <fragment
         android:id="@+id/quizResultsFragment"
-        android:name="uz.dckroff.pcap.features.quiz.QuizResultsFragment"
+        android:name="uz.dckroff.pcap.ui.quiz.QuizResultsFragment"
         android:label="@string/results"
         tools:layout="@layout/fragment_quiz_results">
         <argument
