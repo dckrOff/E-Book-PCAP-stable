@@ -64,25 +64,25 @@ class QuizResultsViewModel @Inject constructor(
             try {
                 // Загружаем тест
                 val quiz = quizRepository.getQuizById(quizId)
-                
+
                 if (quiz != null) {
-                    _quiz.value = quiz
+                    _quiz.value = quiz!!
                     Timber.d("Загружен тест: ${quiz.title}, завершен: ${quiz.isCompleted}")
-                    
+
                     // Загружаем последний результат
                     try {
                         // Получаем реальный результат теста
                         val result = quizRepository.getQuizResult(quizId)
-                        
+
                         if (result != null) {
-                            _quizResult.value = result
+                            _quizResult.value = result!!
                             Timber.d("Загружен результат теста: $result")
                             Timber.d("Процент правильных: ${result.score}%, правильных ответов: ${result.correctAnswers} из ${result.answeredQuestions}")
-                            
+
                             // Форматируем время и дату
                             formatCompletionDate(result.completedAt)
                             formatTimeTaken(result.timeTaken)
-                            
+
                             // Создаем список вопросов с ответами
                             loadUserAnswers(quiz.questions, quizId)
                         } else {
@@ -113,38 +113,42 @@ class QuizResultsViewModel @Inject constructor(
             // Получаем ответы пользователя из репозитория
             val userAnswers = quizRepository.getUserAnswers(quizId)
             Timber.d("Загружены ответы пользователя: $userAnswers")
-            
+
             // Создаем список вопросов с ответами пользователя
             val questionsWithAnswers = questions.mapIndexed { index, question ->
                 val userSelectedOptionIds = userAnswers[question.id] ?: emptyList()
-                
+
                 // Для отладки - проверяем правильность ответа
                 val correctOptionIds = question.options.filter { it.isCorrect }.map { it.id }
                 val isCorrect = when (question.type) {
-                    QuestionType.SINGLE_CHOICE, QuestionType.TRUE_FALSE -> 
-                        userSelectedOptionIds.isNotEmpty() && correctOptionIds.contains(userSelectedOptionIds[0])
-                    QuestionType.MULTIPLE_CHOICE -> 
+                    QuestionType.SINGLE_CHOICE, QuestionType.TRUE_FALSE ->
+                        userSelectedOptionIds.isNotEmpty() && correctOptionIds.contains(
+                            userSelectedOptionIds[0]
+                        )
+
+                    QuestionType.MULTIPLE_CHOICE ->
                         userSelectedOptionIds.toSet() == correctOptionIds.toSet()
+
                     else -> false
                 }
-                
-                Timber.d("Вопрос №${index+1}: ${question.text}")
+
+                Timber.d("Вопрос №${index + 1}: ${question.text}")
                 Timber.d("  Правильные ответы: $correctOptionIds")
                 Timber.d("  Ответы пользователя: $userSelectedOptionIds")
                 Timber.d("  Ответ правильный: $isCorrect")
-                
+
                 QuestionWithAnswer(
                     question = question,
                     userSelectedOptionIds = userSelectedOptionIds,
                     number = index + 1
                 )
             }
-            
+
             _questionsWithAnswers.value = questionsWithAnswers
         } catch (e: Exception) {
             // Если не удалось загрузить ответы, создаем пустой список
             Timber.e(e, "Ошибка при загрузке ответов пользователя: ${e.message}")
-            
+
             // В случае ошибки используем запасной вариант - результаты без ответов
             val questionsWithAnswers = questions.mapIndexed { index, question ->
                 QuestionWithAnswer(
@@ -153,7 +157,7 @@ class QuizResultsViewModel @Inject constructor(
                     number = index + 1
                 )
             }
-            
+
             _questionsWithAnswers.value = questionsWithAnswers
         }
     }

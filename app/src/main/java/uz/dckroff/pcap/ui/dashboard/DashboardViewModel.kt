@@ -105,7 +105,14 @@ class DashboardViewModel @Inject constructor(
 
                     // Ждём все результаты
                     _overallProgress.value = overallProgressDeferred.await() ?: 0
-                    _progressStats.value = progressStatsDeferred.await()
+
+                    val progressStats = progressStatsDeferred.await()
+                    if (progressStats != null) {
+                        _progressStats.value = progressStats
+                    } else {
+                        _progressStats.value = Pair(0, 0) // или любое дефолтное значение
+                    }
+
                     Timber.d("Получение прогресса: ${_overallProgress.value}%, пройдено ${_progressStats.value?.first ?: 0} из ${_progressStats.value?.second ?: 0} разделов")
 
                     // Обрабатываем результаты загрузки глав
