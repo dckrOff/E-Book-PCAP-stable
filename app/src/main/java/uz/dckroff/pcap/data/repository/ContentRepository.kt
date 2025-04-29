@@ -214,6 +214,46 @@ class ContentRepository @Inject constructor(
                         SectionContent.Table(id, headers, rows, caption)
                     }
 
+                    "image" -> {
+                        val url = item["url"] as? String ?: ""
+                        val caption = item["caption"] as? String ?: ""
+                        val description = item["description"] as? String ?: ""
+                        SectionContent.Image(id, url, caption, description)
+                    }
+
+                    "video" -> {
+                        val url = item["url"] as? String ?: ""
+                        val caption = item["caption"] as? String ?: ""
+                        SectionContent.Video(id, url, caption)
+                    }
+
+                    "diagram" -> {
+                        val elementsData = item["elements"] as? List<Map<String, Any>> ?: emptyList()
+                        val elements = elementsData.map { elementData ->
+                            val elementId = elementData["id"] as? String ?: ""
+                            val elementType = elementData["type"] as? String ?: ""
+                            val text = elementData["text"] as? String ?: ""
+                            val x = (elementData["x"] as? Number)?.toFloat() ?: 0f
+                            val y = (elementData["y"] as? Number)?.toFloat() ?: 0f
+                            val width = (elementData["width"] as? Number)?.toFloat() ?: 0f
+                            val height = (elementData["height"] as? Number)?.toFloat() ?: 0f
+                            val connections = (elementData["connections"] as? List<*>)?.mapNotNull { it as? String } ?: emptyList()
+                            
+                            uz.dckroff.pcap.data.model.DiagramElement(
+                                id = elementId,
+                                type = elementType,
+                                text = text,
+                                x = x,
+                                y = y,
+                                width = width,
+                                height = height,
+                                connections = connections
+                            )
+                        }
+                        val caption = item["caption"] as? String ?: ""
+                        SectionContent.Diagram(id, elements, caption)
+                    }
+
                     else -> null
                 }
             }

@@ -22,6 +22,7 @@ import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import uz.dckroff.pcap.R
@@ -179,7 +180,7 @@ class ReadingFragment : Fragment() {
 
         // Всегда показываем кнопку
         binding.fabNextSection.visibility = View.VISIBLE
-        
+
         // Если есть следующий раздел, кнопка ведет к нему, иначе - возврат на главный экран
         if (nextSection != null) {
             // Для следующего раздела используем стрелку вправо
@@ -227,7 +228,7 @@ class ReadingFragment : Fragment() {
                 }
             }
         }
-        
+
         // Добавляем слушатель к ViewTreeObserver
         binding.nestedScrollView.viewTreeObserver.addOnScrollChangedListener(scrollListener)
     }
@@ -237,17 +238,17 @@ class ReadingFragment : Fragment() {
      */
     private fun navigateToNextSection() {
         val nextSection = viewModel.getNextSection(currentSectionId)
-        
+
         // Отмечаем текущий раздел как прочитанный перед переходом к следующему
         viewModel.markSectionAsRead(currentSectionId)
-        
+
         // Добавляем небольшую задержку, чтобы база данных обновилась
         binding.root.postDelayed({
             if (nextSection != null) {
                 // Переходим к следующему разделу
                 try {
                     Timber.d("Переход к следующему разделу: ${nextSection.id}")
-                    
+
                     // Переход к следующему разделу в Navigation Component
                     findNavController().navigate(
                         R.id.actionReadingFragmentSelf,
@@ -266,7 +267,11 @@ class ReadingFragment : Fragment() {
                 try {
                     // Явный переход на Dashboard вместо простого navigateUp()
                     findNavController().navigate(R.id.dashboardFragment)
-                    Toast.makeText(requireContext(), getString(R.string.section_completed), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.section_completed),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } catch (e: Exception) {
                     Timber.e(e, "Ошибка при возврате на главный экран")
                     // Запасной вариант - просто вернуться назад
@@ -362,9 +367,16 @@ class ReadingFragment : Fragment() {
         val imageView = containerView.findViewById<ImageView>(R.id.ivContentImage)
         val captionView = containerView.findViewById<TextView>(R.id.tvImageCaption)
 
-        // Загрузка изображения (использовать Glide или другую библиотеку)
-        // В демо-версии можно использовать плейсхолдер
-        imageView.setImageResource(R.drawable.img_placeholder)
+//        // Загрузка изображения (использовать Glide или другую библиотеку)
+//        // В демо-версии можно использовать плейсхолдер
+//        imageView.setImageResource(R.drawable.img_placeholder)
+
+        Glide
+            .with(requireContext())
+            .load(content.url)
+            .centerCrop()
+            .placeholder(R.drawable.img)
+            .into(imageView);
 
         // Установка подписи, если она есть
         if (content.caption.isNotEmpty()) {
@@ -565,7 +577,7 @@ class ReadingFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        
+
         // Сохраняем позицию чтения при уходе с экрана
         if (_binding != null) {
             val scrollPosition = binding.nestedScrollView.scrollY
@@ -585,7 +597,7 @@ class ReadingFragment : Fragment() {
         } catch (e: Exception) {
             Timber.e(e, "Ошибка при удалении слушателя прокрутки")
         }
-        
+
         super.onDestroyView()
         _binding = null
     }
