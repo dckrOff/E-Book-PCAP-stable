@@ -1,9 +1,11 @@
 package uz.dckroff.pcap.ui.reading
 
-import android.graphics.Typeface
+import android.content.Intent
 import android.graphics.text.LineBreaker
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -376,7 +378,7 @@ class ReadingFragment : Fragment() {
             .load(content.url)
             .centerCrop()
             .placeholder(R.drawable.img)
-            .into(imageView);
+            .into(imageView)
 
         // Установка подписи, если она есть
         if (content.caption.isNotEmpty()) {
@@ -435,7 +437,7 @@ class ReadingFragment : Fragment() {
 
         // Отображение кода
         codeView.text = content.content
-        codeView.typeface = Typeface.MONOSPACE
+        codeView.typeface = android.graphics.Typeface.MONOSPACE
 
         // В реальном приложении можно использовать библиотеку подсветки синтаксиса
 
@@ -462,8 +464,26 @@ class ReadingFragment : Fragment() {
         val captionView = containerView.findViewById<TextView>(R.id.videoTitle)
         val durationView = containerView.findViewById<TextView>(R.id.tv_duration)
 
-        // Загрузка превью (используйте Glide или другую библиотеку)
-        thumbnailView.setImageResource(R.drawable.img_placeholder)
+        // Получаем ID видео из URL
+        val videoId = extractYouTubeId(content.url)
+
+        // Загружаем обложку видео если это YouTube видео
+        if (videoId != null) {
+            // Формируем URL обложки в высоком качестве
+            val thumbnailUrl = "https://img.youtube.com/vi/$videoId/hqdefault.jpg"
+            Log.e("TAG", "addVideoContent: thumbnailUrl: " + thumbnailUrl)
+
+            // Загружаем превью с помощью Glide
+            Glide.with(requireContext())
+                .load(thumbnailUrl)
+                .placeholder(R.drawable.img)
+                .error(R.drawable.img)
+                .centerCrop()
+                .into(thumbnailView)
+        } else {
+            // Если не удалось получить ID видео или это не YouTube видео, используем плейсхолдер
+            thumbnailView.setImageResource(R.drawable.img_placeholder)
+        }
 
         // Отображение длительности
         if (content.durationSeconds > 0) {
@@ -477,12 +497,45 @@ class ReadingFragment : Fragment() {
 
         // Обработка нажатия на кнопку воспроизведения
         playButton.setOnClickListener {
-            // Здесь был бы код для воспроизведения видео
-            Toast.makeText(
-                requireContext(),
-                "Воспроизведение видео: ${content.url}",
-                Toast.LENGTH_SHORT
-            ).show()
+            // Получаем URL видео из YouTube
+            val videoUrl = content.url
+
+            try {
+                // Создаем Intent для открытия видео
+                val intent = Intent(Intent.ACTION_VIEW)
+
+                // Проверяем, является ли URL ссылкой на YouTube
+                if (videoUrl.contains("youtu.be") || videoUrl.contains("youtube.com")) {
+                    // Устанавливаем URI YouTube видео
+                    intent.data = Uri.parse(videoUrl)
+
+                    // Пытаемся открыть в приложении YouTube если оно установлено
+                    intent.setPackage("com.google.android.youtube")
+
+                    // Проверяем, есть ли приложение, которое может обработать этот Intent
+                    if (intent.resolveActivity(requireActivity().packageManager) != null) {
+                        startActivity(intent)
+                    } else {
+                        // Если приложение YouTube не установлено, открываем в браузере
+                        intent.setPackage(null) // Сбрасываем package для открытия в любом браузере
+                        startActivity(intent)
+                    }
+                } else {
+                    // Для других типов видео можно использовать встроенный видеоплеер
+                    Toast.makeText(
+                        requireContext(),
+                        "Неподдерживаемый формат видео: ${content.url}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Ошибка при попытке воспроизведения видео")
+                Toast.makeText(
+                    requireContext(),
+                    "Ошибка при воспроизведении видео: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         // Установка подписи, если она есть
@@ -495,6 +548,23 @@ class ReadingFragment : Fragment() {
 
         binding.contentContainer.addView(containerView)
     }
+
+    /**
+     * Извлекает ID видео из YouTube URL
+     * Поддерживает форматы:
+     * - https://www.youtube.com/watch?v=VIDEO_ID
+     * - https://youtu.be/VIDEO_ID
+     * - https://www.youtube.com/embed/VIDEO_ID
+     */
+    private fun extractYouTubeId(url: String): String? {
+        val regex = Regex(
+            pattern = "(?:youtube\\.com.*[?&]v=|youtu\\.be/|youtube\\.com/embed/)([a-zA-Z0-9_-]{11})",
+            options = setOf(RegexOption.IGNORE_CASE)
+        )
+        val match = regex.find(url)
+        return match?.groups?.get(1)?.value
+    }
+
 
     /**
      * Добавляет таблицу на экран
@@ -511,7 +581,7 @@ class ReadingFragment : Fragment() {
         content.headers.forEach { headerText ->
             val headerView = TextView(requireContext()).apply {
                 text = headerText
-                setTypeface(null, Typeface.BOLD)
+                setTypeface(null, android.graphics.Typeface.BOLD)
                 setPadding(16, 8, 16, 8)
                 background =
                     ResourcesCompat.getDrawable(resources, R.drawable.table_header_bg, null)
