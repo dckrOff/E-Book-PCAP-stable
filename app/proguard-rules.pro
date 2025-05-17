@@ -19,3 +19,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Игнорировать ссылки на классы, которые мы не используем
+-dontwarn org.bouncycastle.**
+-dontwarn org.conscrypt.**
+-dontwarn org.openjsse.**
+
+# Также, чтобы R8 не упал из-за отсутствия этих классов
+-assumenosideeffects class org.bouncycastle.** { *; }
+-assumenosideeffects class org.conscrypt.** { *; }
+-assumenosideeffects class org.openjsse.** { *; }

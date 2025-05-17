@@ -205,14 +205,26 @@ class ContentRepository @Inject constructor(
                     }
 
                     "table" -> {
-                        val headers = (item["headers"] as? List<*>)?.mapNotNull { it as? String }
-                            ?: emptyList()
-                        val rows = (item["rows"] as? List<*>)?.mapNotNull { row ->
-                            (row as? List<*>)?.mapNotNull { it as? String } ?: emptyList()
+                        val headers = (item["headers"] as? List<*>)?.mapNotNull { it as? String } ?: emptyList()
+
+                        val rows = (item["rows"] as? List<*>)?.mapNotNull { rowItem ->
+                            when (rowItem) {
+                                is Map<*, *> -> {
+                                    val cells = rowItem["cells"] as? List<*> ?: return@mapNotNull null
+                                    cells.mapNotNull { it as? String }
+                                }
+                                is List<*> -> {
+                                    // поддержка старого формата, если он вдруг остался
+                                    rowItem.mapNotNull { it as? String }
+                                }
+                                else -> null
+                            }
                         } ?: emptyList()
+
                         val caption = item["caption"] as? String ?: ""
                         SectionContent.Table(id, headers, rows, caption)
                     }
+
 
                     "image" -> {
                         val url = item["url"] as? String ?: ""

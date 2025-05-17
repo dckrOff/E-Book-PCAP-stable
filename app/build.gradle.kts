@@ -16,7 +16,7 @@ android {
         applicationId = "uz.dckroff.pcap"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
         multiDexEnabled = true
 
@@ -25,7 +25,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -108,12 +108,12 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
 
-    // okhttp
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    implementation("com.github.bumptech.glide:okhttp3-integration:4.0.0") {
-        exclude("glide-parent")
-    }
+    // glide
+//    implementation("com.github.bumptech.glide:glide:4.16.0")
+//    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+//    implementation("com.github.bumptech.glide:okhttp3-integration:4.0.0") {
+//        exclude("glide-parent")
+//    }
 
     implementation("com.android.support:multidex:1.0.3")
 
