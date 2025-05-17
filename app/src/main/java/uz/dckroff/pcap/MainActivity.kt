@@ -2,10 +2,12 @@ package uz.dckroff.pcap
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import uz.dckroff.pcap.databinding.ActivityMainBinding
@@ -27,6 +29,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setupBackHandling()
 
         // Используем lazy initialization для View Binding
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -124,16 +128,37 @@ class MainActivity : AppCompatActivity() {
         showMainContent()
         binding.contentMain.viewPager.currentItem = position
     }
-    
-    override fun onBackPressed() {
-        // Если NavHostFragment виден, сначала обрабатываем навигацию назад в нем
-        if (binding.contentMain.mainNavHostFragment.visibility == View.VISIBLE) {
-            if (!navController.popBackStack()) {
-                // Если в стеке навигации больше нет фрагментов, возвращаемся к основным вкладкам
-                showMainContent()
+
+    private fun showExitConfirmationDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Выход из приложения")
+            .setMessage("Вы уверены, что хотите выйти из приложения?")
+            .setNegativeButton("Отмена") { dialog, _ ->
+                dialog.dismiss()
             }
-        } else {
-            super.onBackPressed()
-        }
+            .setPositiveButton("Выйти") { _, _ ->
+                finish()
+            }
+            .show()
     }
+
+    private fun setupBackHandling() {
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (binding.contentMain.mainNavHostFragment.visibility == View.VISIBLE) {
+                        if (!navController.popBackStack()) {
+                            // Если в стеке навигации больше нет фрагментов, возвращаемся к основным вкладкам
+                            showMainContent()
+                        }
+                    } else {
+//                        onBackPressedDispatcher.onBackPressed()
+                        showExitConfirmationDialog()
+                    }
+                }
+            }
+        )
+    }
+
 }

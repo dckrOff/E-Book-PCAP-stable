@@ -274,4 +274,6 @@
     <string name="video_load_error">Ошибка загрузки видео</string>
     <string name="term_definition">Определение</string>
     <string name="interactive_diagram_hint">Нажмите на точки для получения информации</string>
+    <string name="error_no_quiz_id">ID теста не указан</string>
+    <string name="error_quiz_not_available">Cannot retake quiz: quiz is null</string>
 </resources>
