@@ -37,7 +37,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?textAppearanceHeadlineMedium"
-                android:textColor="@color/textColorPrimary"
                 android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="TCP/IP" />
@@ -62,7 +61,6 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/definition"
                 android:textAppearance="?textAppearanceBodyLarge"
-                android:textColor="@color/textColorPrimary"
                 android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@id/chipCategory" />
 
@@ -72,7 +70,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:textAppearance="?textAppearanceBodyLarge"
-                android:textColor="@color/textColorPrimary"
                 app:layout_constraintTop_toBottomOf="@id/definitionLabel"
                 tools:text="Набор сетевых протоколов, обеспечивающих передачу данных между устройствами в сети. Состоит из четырех уровней: прикладной, транспортный, сетевой и канальный." />
 
@@ -91,7 +88,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/related_terms"
                     android:textAppearance="?textAppearanceBodyLarge"
-                    android:textColor="@color/textColorPrimary"
                     android:textStyle="bold"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -152,7 +148,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/related_sections"
                     android:textAppearance="?textAppearanceBodyLarge"
-                    android:textColor="@color/textColorPrimary"
                     android:textStyle="bold"
                     app:layout_constraintTop_toTopOf="parent" />
 

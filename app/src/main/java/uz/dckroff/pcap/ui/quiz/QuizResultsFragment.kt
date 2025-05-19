@@ -202,21 +202,26 @@ class QuizResultsFragment : Fragment() {
     private fun navigateToQuizList() {
         Timber.d("Navigating back to QuizListFragment")
 
-        try {
-            // Способ 1: Использовать MainActivity и активировать соответствующую вкладку
-            (requireActivity() as? MainActivity)?.let { activity ->
-                activity.navigateToMainSection(2) // Индекс вкладки с тестами
-                return
-            }
+        // Переходим к экрану результатов
+        findNavController().navigate(
+            R.id.quizListFragment
+        )
 
-            // Способ 2: Попробовать вернуться к конкретному фрагменту
-            findNavController().popBackStack(R.id.quizListFragment, false)
-        } catch (e: Exception) {
-            Timber.e(e, "Ошибка при навигации к списку тестов: ${e.message}")
-
-            // Запасной вариант: просто вернуться назад
-            findNavController().popBackStack()
-        }
+//        try {
+//            // Способ 1: Использовать MainActivity и активировать соответствующую вкладку
+//            (requireActivity() as? MainActivity)?.let { activity ->
+//                activity.navigateToMainSection(2) // Индекс вкладки с тестами
+//                return
+//            }
+//
+//            // Способ 2: Попробовать вернуться к конкретному фрагменту
+//            findNavController().popBackStack(R.id.quizListFragment, false)
+//        } catch (e: Exception) {
+//            Timber.e(e, "Ошибка при навигации к списку тестов: ${e.message}")
+//
+//            // Запасной вариант: просто вернуться назад
+//            findNavController().popBackStack()
+//        }
     }
 
     private fun setupObservers() {

@@ -16,8 +16,8 @@ android {
         applicationId = "uz.dckroff.pcap"
         minSdk = 24
         targetSdk = 34
-        versionCode = 6
-        versionName = "1.0"
+        versionCode = 8
+        versionName = "1.0.3"
         multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

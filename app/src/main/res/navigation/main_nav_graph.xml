@@ -2,15 +2,15 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/dashboardFragment"
-    android:id="@+id/main_nav_graph">
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/dashboardFragment">
 
     <fragment
         android:id="@+id/dashboardFragment"
         android:name="uz.dckroff.pcap.ui.dashboard.DashboardFragment"
         android:label="@string/dashboard"
         tools:layout="@layout/fragment_dashboard">
-        
+
         <action
             android:id="@+id/action_dashboardFragment_to_contentListFragment"
             app:destination="@id/contentListFragment"
@@ -28,12 +28,12 @@
             app:popExitAnim="@anim/fade_out" />
     </fragment>
 
-        <fragment
+    <fragment
         android:id="@+id/contentListFragment"
         android:name="uz.dckroff.pcap.ui.content.ContentListFragment"
         android:label="@string/content"
         tools:layout="@layout/fragment_content_list">
-        
+
         <action
             android:id="@+id/action_contentListFragment_to_readingFragment"
             app:destination="@id/readingFragment"
@@ -48,7 +48,7 @@
         android:name="uz.dckroff.pcap.ui.bookmarks.BookmarksFragment"
         android:label="@string/bookmarks"
         tools:layout="@layout/fragment_bookmarks">
-        
+
         <action
             android:id="@+id/action_bookmarksFragment_to_readingFragment"
             app:destination="@id/readingFragment"
@@ -63,7 +63,7 @@
         android:name="uz.dckroff.pcap.ui.glossary.GlossaryFragment"
         android:label="@string/glossary"
         tools:layout="@layout/fragment_glossary">
-        
+
         <action
             android:id="@+id/action_glossaryFragment_to_glossaryDetailFragment"
             app:destination="@id/glossaryDetailFragment"
@@ -78,11 +78,11 @@
         android:name="uz.dckroff.pcap.ui.glossary.GlossaryDetailFragment"
         android:label="@string/glossary_detail"
         tools:layout="@layout/fragment_glossary_detail">
-        
+
         <argument
             android:name="termId"
             app:argType="string" />
-            
+
         <action
             android:id="@+id/action_glossaryDetail_self"
             app:destination="@id/glossaryDetailFragment"
@@ -90,7 +90,7 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/fade_out" />
-            
+
         <action
             android:id="@+id/action_glossaryDetailFragment_to_readingFragment"
             app:destination="@id/readingFragment"
@@ -177,6 +177,13 @@
         <action
             android:id="@+id/action_quizResultsFragment_to_quizSessionFragment"
             app:destination="@id/quizSessionFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
+        <action
+            android:id="@+id/action_quizResultsFragment_to_quizListFragment"
+            app:destination="@id/quizListFragment"
             app:enterAnim="@anim/fade_in"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"

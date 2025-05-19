@@ -17,16 +17,21 @@
             android:layout_height="?attr/actionBarSize"
             app:title="@string/glossary" />
 
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchView"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
+            app:cardCornerRadius="8dp"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:background="@drawable/search_background"
-            android:iconifiedByDefault="false"
-            android:queryHint="@string/search_glossary"
-            app:iconifiedByDefault="false"
-            app:queryHint="@string/search_glossary" />
+            android:layout_margin="8dp">
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:iconifiedByDefault="false"
+                android:queryHint="@string/search_glossary"
+                app:iconifiedByDefault="false"
+                app:queryHint="@string/search_glossary" />
+        </com.google.android.material.card.MaterialCardView>
 
         <HorizontalScrollView
             android:layout_width="match_parent"
