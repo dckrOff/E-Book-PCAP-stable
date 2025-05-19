@@ -18,6 +18,7 @@ import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.HtmlCompat
@@ -27,6 +28,7 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import uz.dckroff.pcap.MainActivity
 import uz.dckroff.pcap.R
 import uz.dckroff.pcap.data.model.SectionContent
 import uz.dckroff.pcap.databinding.FragmentReadingBinding
@@ -87,6 +89,7 @@ class ReadingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupToolbar()
+        setupBackStackButton()
         setupObservers()
         setupButtons()
         setupScrollListener()
@@ -111,6 +114,19 @@ class ReadingFragment : Fragment() {
         }
 
         binding.toolbar.title = sectionTitle
+    }
+
+    private fun setupBackStackButton() {
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (!findNavController().popBackStack()) {
+                        (requireActivity() as? MainActivity)?.showMainContent()
+                    }
+                }
+            }
+        )
     }
 
     private fun setupObservers() {

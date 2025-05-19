@@ -38,13 +38,13 @@ class MainActivity : AppCompatActivity() {
 
         // Инициализация основной системы навигации (ViewPager + BottomNav)
         setupMainNavigation()
-        
+
         // Инициализация детальной навигации через NavHostFragment
         setupDetailNavigation()
-        
+
         Timber.d("MainActivity onCreate")
     }
-    
+
     private fun setupMainNavigation() {
         // Создаем список фрагментов для ViewPager
         val fragments = listOf(
@@ -80,18 +80,18 @@ class MainActivity : AppCompatActivity() {
             true
         }
     }
-    
+
     private fun setupDetailNavigation() {
         // Получаем NavController из NavHostFragment
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.mainNavHostFragment) as NavHostFragment
         navController = navHostFragment.navController
-        
+
         // Слушатель изменений в навигации для детальных экранов
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 // Основные разделы (обслуживаются ViewPager)
-                R.id.dashboardFragment, R.id.glossaryFragment, 
+                R.id.dashboardFragment, R.id.glossaryFragment,
                 R.id.quizListFragment, R.id.bookmarksFragment -> {
                     showMainContent()
                 }
@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    
+
     /**
      * Показать основной контент (ViewPager + BottomNav)
      */
@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavView.visibility = View.VISIBLE
         binding.contentMain.mainNavHostFragment.visibility = View.GONE
     }
-    
+
     /**
      * Показать детальный контент (NavHostFragment)
      */
@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavView.visibility = View.GONE
         binding.contentMain.mainNavHostFragment.visibility = View.VISIBLE
     }
-    
+
     /**
      * Метод для навигации к основным экранам
      */

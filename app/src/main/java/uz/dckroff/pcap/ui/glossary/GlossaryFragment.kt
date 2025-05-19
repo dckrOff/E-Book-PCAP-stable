@@ -65,7 +65,6 @@ class GlossaryFragment : Fragment() {
             viewModel.loadTerm(term.id)
             // Переход к экрану деталей термина
             try {
-                // Используем правильное действие навигации из графа main_nav_graph.xml
                 findNavController().navigate(
                     R.id.glossaryDetailFragment,
                     Bundle().apply {

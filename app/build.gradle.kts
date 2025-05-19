@@ -16,7 +16,7 @@ android {
         applicationId = "uz.dckroff.pcap"
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
+        versionCode = 4
         versionName = "1.0"
         multiDexEnabled = true
 

@@ -139,16 +139,20 @@
                 app:layout_constraintTop_toBottomOf="@+id/difficultyChipGroup"
                 tools:listitem="@layout/item_quiz" />
 
-            <include
+            <TextView
                 android:id="@+id/emptyView"
-                layout="@layout/layout_empty"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="Нет тестов для отображения"
+                android:textSize="16sp"
                 android:visibility="gone"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/difficultyChipGroup" />
+                app:layout_constraintTop_toBottomOf="@+id/difficultyChipGroup"
+                tools:visibility="visible" />
 
             <include
                 android:id="@+id/errorView"

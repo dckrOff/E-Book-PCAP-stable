@@ -95,7 +95,7 @@ class QuizResultsViewModel @Inject constructor(
             val quiz = quizRepository.getQuizById(quizId)
 
             if (quiz != null) {
-                _quiz.postValue(quiz)
+                _quiz.postValue(quiz!!)
                 Timber.d("Загружен тест: ${quiz.title}, завершен: ${quiz.isCompleted}")
                 true
             } else {
@@ -119,7 +119,7 @@ class QuizResultsViewModel @Inject constructor(
             val result = quizRepository.getQuizResult(quizId)
 
             if (result != null) {
-                _quizResult.postValue(result)
+                _quizResult.postValue(result!!)
                 Timber.d("Загружен результат теста: $result")
                 Timber.d("Процент правильных: ${result.score}%, правильных ответов: ${result.correctAnswers} из ${result.answeredQuestions}")
 

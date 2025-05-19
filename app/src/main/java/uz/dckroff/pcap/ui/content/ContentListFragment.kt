@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -14,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import uz.dckroff.pcap.MainActivity
 import uz.dckroff.pcap.R
 import uz.dckroff.pcap.data.model.ContentItem
 import uz.dckroff.pcap.databinding.FragmentContentListBinding
@@ -51,11 +53,37 @@ class ContentListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupToolbar()
+        setupBackStackButton()
         setupRecyclerView()
         setupSwipeRefresh()
         observeViewModel()
 
         viewModel.loadContent(chapterId!!)
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.title = chapterTitle
+        binding.toolbar.setNavigationOnClickListener {
+            // Используем NavController из MainActivity для навигации назад
+            if (!findNavController().popBackStack()) {
+                // Если нет предыдущего фрагмента в стеке, возвращаемся к основным разделам
+                (requireActivity() as? MainActivity)?.showMainContent()
+            }
+        }
+    }
+
+    private fun setupBackStackButton(){
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (!findNavController().popBackStack()) {
+                        (requireActivity() as? MainActivity)?.showMainContent()
+                    }
+                }
+            }
+        )
     }
 
     private fun setupRecyclerView() {

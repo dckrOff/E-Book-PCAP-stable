@@ -141,9 +141,13 @@ class DashboardFragment : Fragment() {
             if (chapters.isNullOrEmpty()) {
                 binding.tvAllTitle.visibility = View.GONE
                 binding.rvAllChapters.visibility = View.GONE
+                binding.tvNoData.visibility = View.VISIBLE
+//                binding.refreshBtn.visibility = View.VISIBLE
             } else {
                 binding.tvAllTitle.visibility = View.VISIBLE
                 binding.rvAllChapters.visibility = View.VISIBLE
+                binding.tvNoData.visibility = View.GONE
+//                binding.refreshBtn.visibility = View.GONE
             }
         }
 
