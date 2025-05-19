@@ -24,7 +24,7 @@
             android:id="@+id/progressIndicator"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:progress="30"
+            android:progress="0"
             app:indicatorColor="@color/colorPrimary"
             app:trackColor="@color/lightGray" />
 
@@ -90,6 +90,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="88dp"
+        android:visibility="gone"
         android:contentDescription="Добавить закладку"
         app:srcCompat="@drawable/ic_bookmark_border" />
 

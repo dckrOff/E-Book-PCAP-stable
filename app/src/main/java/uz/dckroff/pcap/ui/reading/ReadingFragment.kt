@@ -147,7 +147,7 @@ class ReadingFragment : Fragment() {
             currentSectionId = section.id
 
             // Обновляем видимость кнопки перехода к следующему разделу
-            updateNextButtonVisibility()
+            updateNextButton()
         }
         viewModel.sectionContent.observe(viewLifecycleOwner) { sectionContent ->
             Timber.d("Контент раздела: ${sectionContent.size}")
@@ -156,7 +156,7 @@ class ReadingFragment : Fragment() {
 
         // Наблюдаем за разделами, чтобы обновить видимость кнопки
         viewModel.allSections.observe(viewLifecycleOwner) { sections ->
-            updateNextButtonVisibility()
+            updateNextButton()
         }
 
         // Наблюдаем за сохраненной позицией прокрутки
@@ -191,9 +191,9 @@ class ReadingFragment : Fragment() {
     }
 
     /**
-     * Обновляет видимость кнопки перехода к следующему разделу
+     * Обновляет кнопки перехода к следующему разделу
      */
-    private fun updateNextButtonVisibility() {
+    private fun updateNextButton() {
         val nextSection = viewModel.getNextSection(currentSectionId)
 
         // Всегда показываем кнопку
@@ -328,7 +328,11 @@ class ReadingFragment : Fragment() {
             }
 
             // После добавления контента обновляем видимость кнопки
-            updateNextButtonVisibility()
+            updateNextButton()
+
+            if (sectionContent.isEmpty()) {
+                addTextContent(SectionContent.Text("-1", "Контент отсутствует", false))
+            }
 
             Timber.tag("PCAP_READING").e("Контент успешно добавлен для раздела: $sectionId")
         } catch (e: Exception) {
@@ -632,34 +636,34 @@ class ReadingFragment : Fragment() {
         binding.contentContainer.addView(containerView)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_reading, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        inflater.inflate(R.menu.menu_reading, menu)
+//        super.onCreateOptionsMenu(menu, inflater)
+//    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_add_note -> {
-                // В дальнейшем здесь будет код для добавления заметки
-                Toast.makeText(requireContext(), "Добавление заметки", Toast.LENGTH_SHORT).show()
-                true
-            }
-
-            R.id.action_share -> {
-                // В дальнейшем здесь будет код для шеринга
-                Toast.makeText(requireContext(), "Поделиться", Toast.LENGTH_SHORT).show()
-                true
-            }
-
-            R.id.action_font_settings -> {
-                // В дальнейшем здесь будет код для настройки шрифта
-                Toast.makeText(requireContext(), "Настройки шрифта", Toast.LENGTH_SHORT).show()
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        return when (item.itemId) {
+//            R.id.action_add_note -> {
+//                // В дальнейшем здесь будет код для добавления заметки
+//                Toast.makeText(requireContext(), "Добавление заметки", Toast.LENGTH_SHORT).show()
+//                true
+//            }
+//
+//            R.id.action_share -> {
+//                // В дальнейшем здесь будет код для шеринга
+//                Toast.makeText(requireContext(), "Поделиться", Toast.LENGTH_SHORT).show()
+//                true
+//            }
+//
+//            R.id.action_font_settings -> {
+//                // В дальнейшем здесь будет код для настройки шрифта
+//                Toast.makeText(requireContext(), "Настройки шрифта", Toast.LENGTH_SHORT).show()
+//                true
+//            }
+//
+//            else -> super.onOptionsItemSelected(item)
+//        }
+//    }
 
     override fun onPause() {
         super.onPause()
